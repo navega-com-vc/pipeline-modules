@@ -1,0 +1,114 @@
+image: f3capital/aquario:latest
+
+stages:
+  - code_quality
+  - test
+  - sonarqube
+  - deploy
+
+variables:
+  AZURE_FUNCTIONS_APP_ID: $AZURE_FUNCTIONS_APP_ID_DEV
+  AZURE_FUNCTIONS_SECRET: $AZURE_FUNCTIONS_SECRET_DEV
+  AZURE_CLIENT_ID: $AZURE_CLIENT_ID_DEV
+  AZURE_CLIENT_SECRET: $AZURE_CLIENT_SECRET_DEV
+  AZURE_REGION: $AZURE_REGION_DEV
+  AZURE_STAGE: $AZURE_STAGE_DEV
+  AZURE_RESOURCE_GROUP: $AZURE_RESOURCE_GROUP_DEV
+  APPINSIGHTS_INSTRUMENTATIONKEY: $APPINSIGHTS_INSTRUMENTATIONKEY_DEV
+  DATABASE_HOST: $DATABASE_HOST_DEV
+  DATABASE_USERNAME: $DATABASE_USERNAME_DEV
+  DATABASE_PASSWORD: $DATABASE_PASSWORD_DEV
+  DATABASE_NAME: $DATABASE_NAME_DEV
+  KEYCLOAK_URL: $KEYCLOAK_URL_DEV
+  KEYCLOAK_USERNAME_TEST: $KEYCLOAK_USERNAME_TEST
+  KEYCLOAK_PASSWORD_TEST: $KEYCLOAK_PASSWORD_TEST
+
+.artifactory-npm-config:
+  before_script:
+    - npm config set registry $ARTIFACTORY_NPM_REGISTRY
+    - npm config set -- '_auth' "$ARTIFACTORY_AUTH"
+    - npm config set -- 'email' "$ARTIFACTORY_EMAIL"
+    - npm config set -- 'always-auth' "true"
+    - yarn install
+
+lint:
+  stage: code_quality
+  extends: .artifactory-npm-config
+  script: yarn lint
+
+audit:
+  stage: code_quality
+  extends: .artifactory-npm-config
+  script: yarn audit --groups dependencies
+
+test:
+  stage: test
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  extends: .artifactory-npm-config
+  script: yarn test
+  artifacts:
+    paths:
+      - coverage
+
+sonarqube:
+  stage: sonarqube
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [ "" ]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  dependencies:
+    - test
+  script:
+    - sonar-scanner
+
+deploy:dev:
+  stage: deploy
+  extends: .artifactory-npm-config
+  script:
+    - sls package
+    - az login --service-principal --username $AZURE_FUNCTIONS_APP_ID --password $AZURE_FUNCTIONS_SECRET --tenant $AZURE_TENANT_ID
+    - az functionapp deployment source config-zip -g $AZURE_RESOURCE_GROUP -n aquario-eus2-dev-auth-service --src .serverless/auth-service.zip
+    - sls deploy
+  only:
+    - dev
+
+deploy:stg:
+  stage: deploy
+  variables:
+    AZURE_STAGE: $AZURE_STAGE_STG
+    AZURE_RESOURCE_GROUP: $AZURE_RESOURCE_GROUP_STG
+    APPINSIGHTS_INSTRUMENTATIONKEY: $APPINSIGHTS_INSTRUMENTATIONKEY_STG
+  extends: .artifactory-npm-config
+  script:
+    - sls package
+    - az login --service-principal --username $AZURE_FUNCTIONS_APP_ID --password $AZURE_FUNCTIONS_SECRET --tenant $AZURE_TENANT_ID
+    - az functionapp deployment source config-zip -g $AZURE_RESOURCE_GROUP -n aquario-eus2-stg-auth-service --src .serverless/auth-service.zip
+    - sls deploy
+  only:
+    - stg
+
+deploy:sbx:
+  stage: deploy
+  variables:
+    AZURE_STAGE: $AZURE_STAGE_SBX
+    AZURE_RESOURCE_GROUP: $AZURE_RESOURCE_GROUP_SBX
+    APPINSIGHTS_INSTRUMENTATIONKEY: $APPINSIGHTS_INSTRUMENTATIONKEY_SBX
+    DATABASE_HOST: $DATABASE_HOST_SBX
+    DATABASE_USERNAME: $DATABASE_USERNAME_SBX
+    DATABASE_PASSWORD: $DATABASE_PASSWORD_SBX
+    DATABASE_NAME: $DATABASE_NAME_SBX
+    KEYCLOAK_URL: $KEYCLOAK_URL_SBX
+  extends: .artifactory-npm-config
+  script:
+    - sls package
+    - az login --service-principal --username $AZURE_FUNCTIONS_APP_ID --password $AZURE_FUNCTIONS_SECRET --tenant $AZURE_TENANT_ID
+    - az functionapp deployment source config-zip -g $AZURE_RESOURCE_GROUP -n aquario-eus2-sbx-auth-service --src .serverless/auth-service.zip
+    - sls deploy
+  only:
+    - sbx
