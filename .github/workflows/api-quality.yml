@@ -2,3 +2,61 @@ name: api-quality
 
 on:
   workflow_call:
+
+jobs:
+  # This workflow contains a single job called "build"
+  quality:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    env: 
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+      KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
+      KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
+      KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+      APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_DEV}}
+      SONAR_URL: ${{secrets.SONAR_URL}}
+      SONAR_USERNAME: ${{secrets.SONAR_USERNAME}}
+      SONAR_PASSWORD: ${{secrets.SONAR_PASSWORD}}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      # Runs a set of commands using the runners shell
+      - name: Install
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+          yarn install
+          
+      - name: Lint 
+        run: |
+          yarn lint
+          
+      - name: Audit
+        run: |
+          yarn audit --groups dependencies
+          
+      - name: Test
+        run: |
+          yarn test
+          
+      - name: Sonarqube 
+        run: |
+          yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password=${{secrets.SONAR_PASSWORD}}
