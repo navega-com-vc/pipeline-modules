@@ -2,6 +2,10 @@ name: qualityWorkflow
 
 on:
   workflow_call:
+    inputs:
+      SKIP:
+        type: boolean
+        default: false
 
 jobs:
   # This workflow contains a single job called "build"
@@ -47,11 +51,12 @@ jobs:
           npm config set -- 'always-auth' "true"
           yarn install
           
-      - name: Lint 
+      - name: Lint
         run: |
           yarn lint
           
       - name: Audit
+        if: ${{ input.SKIP }}
         run: |
           yarn audit --groups dependencies
           
