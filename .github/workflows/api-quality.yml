@@ -2,6 +2,12 @@ name: api-quality
 
 on:
   workflow_call:
+    inputs:
+      envName: 
+        description: "teste"
+        type: string
+        default: "quality"
+    
 
 jobs:
   # This workflow contains a single job called "build"
