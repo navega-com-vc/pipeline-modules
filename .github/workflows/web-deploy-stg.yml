@@ -1,0 +1,58 @@
+name: web-deploy-stg
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-stg:
+    runs-on: ubuntu-latest
+    container: f3capital/aquario:latest
+    
+    env:
+      AQUARIO_API_URL_STG: ${{secrets.AQUARIO_API_URL_STG}}
+      AZURE_STORAGE_STG: ${{secrets.AZURE_STORAGE_STG}}
+      AZURE_NETWORK_RG_STG: ${{secrets.AZURE_NETWORK_RG_STG}}
+      AZURE_FRONT_DOOR_NAME_STG: ${{secrets.AZURE_FRONT_DOOR_NAME_STG}}
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_STG}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_STG}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_STG}}
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_STG}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_STG}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_STG}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_STG}}
+      APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_STG}}
+      #-----------------------------------------------------------------------------#
+      AZURE_FRONT_DOOR_APP_ID: ${{secrets.AZURE_FRONT_DOOR_APP_ID}}
+      AZURE_FRONT_DOOR_SECRET: ${{secrets.AZURE_FRONT_DOOR_SECRET}}
+      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+      KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
+      KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
+      KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+      SONAR_URL: ${{secrets.SONAR_URL}}
+      SONAR_USERNAME: ${{secrets.SONAR_USERNAME}}
+      SONAR_PASSWORD: ${{secrets.SONAR_PASSWORD}}
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+          yarn install
+      - name: Build
+        run: |
+          yarn dev
+      - name: Deploy stg
+        run: |
+          az storage blob delete-batch -s "\$web" --connection-string ${{secrets.AZURE_STORAGE_STG}}
+          az storage blob upload-batch -d "\$web" -s dist --connection-string ${{secrets.AZURE_STORAGE_STG}}
+          az login --service-principal --username ${{secrets.AZURE_FRONT_DOOR_APP_ID}} --password ${{secrets.AZURE_FRONT_DOOR_SECRET}} --tenant ${{secrets.AZURE_TENANT_ID}}
+          az extension add --name front-door
+          az network front-door purge-endpoint -g ${{secrets.AZURE_NETWORK_RG_STG}} -n ${{secrets.AZURE_FRONT_DOOR_NAME_STG}} --content-paths "/*"
