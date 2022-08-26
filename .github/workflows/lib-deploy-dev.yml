@@ -1,4 +1,4 @@
-name: lib-deploy-dev.yaml
+name: lib-deploy-dev
 
 on:
   workflow_call:
