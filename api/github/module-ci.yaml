@@ -1,7 +1,0 @@
-image: f3capital/aquario:latest
-
-stages:
-  - code_quality
-  - test
-  - sonarqube
-  - deploy
