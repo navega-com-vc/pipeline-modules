@@ -1,13 +1,7 @@
-name: api-quality
+name: qualityWorkflow
 
 on:
   workflow_call:
-    inputs:
-      envName: 
-        description: "teste"
-        type: string
-        default: "quality"
-    
 
 jobs:
   # This workflow contains a single job called "build"
@@ -15,6 +9,26 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
+    env:
+      APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_DEV}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+      #---------------------------------------------------#
+      ARTIFACTORY_URL: ${{secrets.ARTIFACTORY_URL}}
+      ARTIFACTORY_USER: ${{secrets.ARTIFACTORY_USER}}
+      ARTIFACTORY_PASSWORD: ${{secrets.ARTIFACTORY_PASSWORD}}
+      ARTIFACTORY_NPM_REPOSITORY: ${{secrets.ARTIFACTORY_NPM_REPOSITORY}}
+      KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
+      KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
+      KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+      SONAR_URL: ${{secrets.SONAR_URL}}
+      SONAR_USERNAME: ${{secrets.SONAR_USERNAME}}
+      SONAR_PASSWORD: ${{secrets.SONAR_PASSWORD}}
       
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
