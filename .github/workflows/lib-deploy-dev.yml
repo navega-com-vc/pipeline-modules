@@ -5,7 +5,7 @@ on:
   
 jobs:
 
-  Deploy:
+  deploy-dev:
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
     
