@@ -1,0 +1,63 @@
+name: lib-deploy-dev.yaml
+
+on:
+  workflow_call:
+  
+jobs:
+
+  Deploy:
+    runs-on: ubuntu-latest
+    container: f3capital/aquario:latest
+    
+    env:
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+      APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_DEV}}
+      #----------------------------------------------------------------#
+      ARTIFACTORY_URL: ${{secrets.ARTIFACTORY_URL}}
+      ARTIFACTORY_USER: ${{secrets.ARTIFACTORY_USER}}
+      ARTIFACTORY_PASSWORD: $${{secrets.ARTIFACTORY_PASSWORD}}
+      ARTIFACTORY_NPM_REPOSITORY: ${{secrets.ARTIFACTORY_NPM_REPOSITORY}}
+      KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
+      KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
+      KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+      SONAR_URL: ${{secrets.SONAR_URL}}
+      SONAR_USERNAME: ${{secrets.SONAR_USERNAME}}
+      SONAR_PASSWORD: ${{secrets.SONAR_PASSWORD}}
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+          yarn install
+          
+      - name: Setup Jfrog
+        run: |
+          export BUILD_NAME=$(node -p "require('./package.json').name")
+          export BUILD_VERSION=$(node -p "require('./package.json').version")
+          curl -fL https://getcli.jfrog.io | sh
+          ./jfrog config add --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
+          
+      - name: Build 
+        run: |
+          yarn build
+      
+      - name: Deploy
+        run: |
+          ./jfrog rt npm-install ${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
+          ./jfrog rt bce $BUILD_NAME $BUILD_VERSION
+          ./jfrog rt npm-publish ${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
