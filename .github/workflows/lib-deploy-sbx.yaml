@@ -58,6 +58,8 @@ jobs:
       
       - name: Deploy
         run: |
+          export BUILD_NAME=$(node -p "require('./package.json').name")
+          export BUILD_VERSION=$(node -p "require('./package.json').version")
           ./jfrog rt npm-install ${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
           ./jfrog rt bce $BUILD_NAME $BUILD_VERSION
           ./jfrog rt npm-publish ${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
