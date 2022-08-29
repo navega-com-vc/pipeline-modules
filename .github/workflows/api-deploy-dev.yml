@@ -2,6 +2,10 @@ name: api-deploy-dev
 
 on:
   workflow_call:
+    inputs:
+      APPNAME:
+        type: string
+        required: true
 
 jobs:
   # This workflow contains a single job called "build"
@@ -49,6 +53,6 @@ jobs:
         run: |
           sls package
           az login --service-principal --username ${{secrets.AZURE_FUNCTIONS_APP_ID_DEV}} --password ${{secrets.AZURE_FUNCTIONS_SECRET_DEV}} --tenant ${{secrets.AZURE_TENANT_ID}}
-          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-dev-auth-service --src .serverless/auth-service.zip
+          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n ${{inputs.APPNAME}} --src .serverless/auth-service.zip
           sls deploy
-          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-dev-auth-service --src .serverless/auth-service.zip
+          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n ${{inputs.APPNAME}} --src .serverless/auth-service.zip
