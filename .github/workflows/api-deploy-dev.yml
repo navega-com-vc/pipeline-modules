@@ -49,7 +49,7 @@ jobs:
         run: |
           sls package
           az login --service-principal --username ${{secrets.AZURE_FUNCTIONS_APP_ID_DEV}} --password ${{secrets.AZURE_FUNCTIONS_SECRET_DEV}} --tenant ${{secrets.AZURE_TENANT_ID}}
-          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-dev-${{inputs.APP_NAME}} --src .serverless/${{inputs.App_NAME}}.zip
+          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-dev-${{inputs.APP_NAME}} --src .serverless/${{inputs.APP_NAME}}.zip
           sls deploy
-          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-dev-${{inputs.APP_NAME}} --src .serverless/${{inputs.App_NAME}}.zip
+          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-dev-${{inputs.APP_NAME}} --src .serverless/${{inputs.APP_NAME}}.zip
 
