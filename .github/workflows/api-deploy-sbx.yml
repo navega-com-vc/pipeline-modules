@@ -35,6 +35,7 @@ jobs:
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_SBX}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_SBX}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_SBX}}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
