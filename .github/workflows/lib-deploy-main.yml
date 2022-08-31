@@ -4,7 +4,7 @@ on:
   workflow_call:
   
 jobs:
-  deploy-dev:
+  deploy-lib:
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
     steps:
