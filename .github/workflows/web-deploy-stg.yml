@@ -9,7 +9,7 @@ jobs:
     container: f3capital/aquario:latest
     
     env:
-      API_URL: ${{secrets.AQUARIO_API_URL_STG}}
+      API_URL: ${{secrets.NAVEGA_API_URL_STG}}
       DATADOG_CLIENT_TOKEN: ${{secrets.DATADOG_CLIENT_TOKEN_STG}}
       DATADOG_APPLICATION_ID: ${{secrets.DATADOG_APPLICATION_ID_STG}}
       DATADOG_SAMPLE_RATE: ${{secrets.DATADOG_SAMPLE_RATE_STG}}
