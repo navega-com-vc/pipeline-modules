@@ -3,7 +3,7 @@ name: api-deploy-stg
 on:
   workflow_call:
     inputs:
-      APPNAME:
+      APP_NAME:
         type: string
         required: true
 
