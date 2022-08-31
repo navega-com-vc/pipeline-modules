@@ -5,9 +5,10 @@ on:
   
 jobs:
   deploy-lib:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
-    if: github.ref == 'refs/heads/main'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
