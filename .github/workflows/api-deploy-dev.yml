@@ -9,8 +9,13 @@ on:
 
 jobs:
   deploy-dev:
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     env:
       AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
       AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
