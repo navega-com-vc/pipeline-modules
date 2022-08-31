@@ -42,7 +42,7 @@ jobs:
           yarn lint
           
       - name: Audit
-        if: ${{ inputs.SKIP_AUDIT }}
+        if: ${{ !inputs.SKIP_AUDIT }}
         run: |
           yarn audit --groups dependencies
           
