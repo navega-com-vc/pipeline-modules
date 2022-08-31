@@ -44,7 +44,7 @@ jobs:
           npm config set -- 'always-auth' "true"
           yarn install
       
-      - name: Deploy SBX 
+      - name: Deploy Sandbox 
         run: |
           sls package
           az login --service-principal --username ${{secrets.AZURE_FUNCTIONS_APP_ID_SBX}} --password ${{secrets.AZURE_FUNCTIONS_SECRET_SBX}} --tenant ${{secrets.AZURE_TENANT_ID}}
