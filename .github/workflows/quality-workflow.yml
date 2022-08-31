@@ -1,4 +1,4 @@
-name: qualityWorkflow
+name: quality-workflow
 
 on:
   workflow_call:
