@@ -53,5 +53,5 @@ jobs:
           
       - name: Sonarqube 
         run: |
-          yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password=${{secrets.SONAR_PASSWORD}} -Dsonar.sourceEncoding=UTF-8
+          yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password='${{secrets.SONAR_PASSWORD}}' -Dsonar.sourceEncoding=UTF-8
 
