@@ -16,6 +16,7 @@ jobs:
       DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+     
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
@@ -53,3 +54,4 @@ jobs:
       - name: Sonarqube 
         run: |
           yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password=${{secrets.SONAR_PASSWORD}}
+
