@@ -50,7 +50,7 @@ jobs:
           npm config set -- 'always-auth' "true"
           yarn install
       
-      - name: Deploy STG 
+      - name: Staging Deploy
         run: |
           sls package
           az login --service-principal --username ${{secrets.AZURE_FUNCTIONS_APP_ID_STG}} --password ${{secrets.AZURE_FUNCTIONS_SECRET_STG}} --tenant ${{secrets.AZURE_TENANT_ID}}
