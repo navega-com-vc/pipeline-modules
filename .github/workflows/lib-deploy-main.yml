@@ -32,7 +32,7 @@ jobs:
         run: |
           yarn build
       
-      - name: Deploy
+      - name: Deploy Lib
         run: |
           export BUILD_NAME=$(node -p "require('./package.json').name")
           export BUILD_VERSION=$(node -p "require('./package.json').version")
