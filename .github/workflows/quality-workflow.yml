@@ -11,6 +11,10 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+      
     env:
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
       DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
