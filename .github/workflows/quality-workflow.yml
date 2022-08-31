@@ -3,6 +3,9 @@ name: quality-workflow
 on:
   workflow_call:
     inputs:
+      CANCEL_IN_PROGRESS:
+        type: boolean
+        default: true
       SKIP_AUDIT:
         type: boolean
         default: false
@@ -13,7 +16,7 @@ jobs:
     container: f3capital/aquario:latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
       
     env:
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
