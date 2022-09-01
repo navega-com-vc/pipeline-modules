@@ -50,7 +50,7 @@ jobs:
           npm config set -- 'always-auth' "true"
           yarn install
       
-      - name: Developemnt Deploy 
+      - name: Development Deploy 
         run: |
           sls package
           az login --service-principal --username ${{secrets.AZURE_FUNCTIONS_APP_ID_DEV}} --password ${{secrets.AZURE_FUNCTIONS_SECRET_DEV}} --tenant ${{secrets.AZURE_TENANT_ID}}
