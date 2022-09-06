@@ -5,8 +5,12 @@ on:
 
 jobs:
   deploy-sbx:
+    if: github.ref == 'refs/heads/sbx'
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     
     env:
       API_URL: ${{secrets.NAVEGA_API_URL_SBX}}
@@ -30,9 +34,9 @@ jobs:
 
       - name: Build
         run: |
-          yarn dev
+          yarn build
       
-      - name: Deploy SBX
+      - name: Sandbox Deploy
         run: |
           az storage blob delete-batch -s "\$web" --connection-string ${{secrets.AZURE_STORAGE_SBX}}
           az storage blob upload-batch -d "\$web" -s dist --connection-string ${{secrets.AZURE_STORAGE_SBX}}
