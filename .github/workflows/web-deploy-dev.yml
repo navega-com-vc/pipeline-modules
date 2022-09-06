@@ -5,8 +5,12 @@ on:
 
 jobs:
   deploy-dev:
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     
     env:
       API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
