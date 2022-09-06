@@ -6,7 +6,16 @@ on:
       CANCEL_IN_PROGRESS:
         type: boolean
         default: true
+      SKIP_LINT:
+        type: boolean
+        default: false
       SKIP_AUDIT:
+        type: boolean
+        default: false
+      SKIP_TESTS:
+        type: boolean
+        default: false
+      CONTINUE_ON_SONARQUBE_ERROR:
         type: boolean
         default: false
 
@@ -46,6 +55,7 @@ jobs:
           yarn install
           
       - name: Lint
+        if: ${{ !inputs.SKIP_LINT }}
         run: |
           yarn lint
           
@@ -54,11 +64,13 @@ jobs:
         run: |
           yarn audit --groups dependencies
           
-      - name: Test
+      - name: Tests
+        if: ${{ !inputs.SKIP_TESTS }}
         run: |
           yarn test
           
-      - name: Sonarqube 
+      - name: Sonarqube
         run: |
           yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password='${{secrets.SONAR_PASSWORD}}' -Dsonar.sourceEncoding=UTF-8
+        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
 
