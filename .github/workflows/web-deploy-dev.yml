@@ -33,7 +33,7 @@ jobs:
         run: |
           yarn dev
       
-      - name: Deploy DEV
+      - name: Development Deploy
         run: |
           az storage blob delete-batch -s "\$web" --connection-string "${{secrets.AZURE_STORAGE_DEV}}"
           az storage blob upload-batch -d "\$web" -s dist --connection-string "${{secrets.AZURE_STORAGE_DEV}}"
