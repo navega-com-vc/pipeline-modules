@@ -70,7 +70,6 @@ jobs:
           yarn test
           
       - name: Sonarqube
+        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         run: |
           yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password='${{secrets.SONAR_PASSWORD}}' -Dsonar.sourceEncoding=UTF-8
-        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
-
