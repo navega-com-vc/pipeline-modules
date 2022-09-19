@@ -1,0 +1,50 @@
+name: api-deploy-sbx
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-sbx:
+    if: github.ref == 'refs/heads/sbx'
+    runs-on: ubuntu-latest
+    container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      AWS_ACCESS: ${{secrets.AWS_ACCESS_SBX}}
+      AWS_SECRET: ${{secrets.AWS_SECRET_SBX}}
+      AWS_REGION: ${{secrets.AWS_REGION_SBX}}
+      
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_SBX}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_SBX}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_SBX}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_SBX}}
+      
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_SBX}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_SBX}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_SBX}}
+
+      LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
+      
+      DD_API_KEY: ${{secrets.DD_API_KEY_SBX}}
+      DD_ENV: ${{secrets.ENV_SBX}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          
+      - name: Install
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+          yarn install
+      
+      - name: Sandbox Deploy 
+        run: |
+          sls deploy --stage ${{secrets.ENV_SBX}} --region ${{secrets.AWS_REGION_SBX}}
