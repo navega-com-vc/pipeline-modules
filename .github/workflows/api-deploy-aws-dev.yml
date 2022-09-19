@@ -13,10 +13,6 @@ jobs:
       cancel-in-progress: true
 
     env:
-      AWS_ACCESS: ${{secrets.AWS_ACCESS_KEY_ID_DEV}}
-      AWS_SECRET: ${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
-      AWS_REGION: ${{secrets.AWS_REGION_DEV}}
-      
       DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
