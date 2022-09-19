@@ -1,0 +1,50 @@
+name: api-deploy-stg
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/stg'
+    runs-on: ubuntu-latest
+    container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      AWS_ACCESS: ${{secrets.AWS_ACCESS_STG}}
+      AWS_SECRET: ${{secrets.AWS_SECRET_STG}}
+      AWS_REGION: ${{secrets.AWS_REGION_STG}}
+      
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_STG}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_STG}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_STG}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_STG}}
+      
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_STG}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_STG}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_STG}}
+
+      LOG_LEVEL: ${{secrets.LOG_LEVEL_STG}}
+      
+      DD_API_KEY: ${{secrets.DD_API_KEY_STG}}
+      DD_ENV: ${{secrets.ENV_STG}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          
+      - name: Install
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+          yarn install
+      
+      - name: Staging Deploy 
+        run: |
+          sls deploy --stage ${{secrets.ENV_STG}} --region ${{secrets.AWS_REGION_STG}}
