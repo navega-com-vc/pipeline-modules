@@ -1,0 +1,50 @@
+name: api-deploy-dev
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    container: f3capital/aquario:latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      AWS_ACCESS: ${{secrets.AWS_ACCESS_DEV}}
+      AWS_SECRET: ${{secrets.AWS_SECRET_DEV}}
+      AWS_REGION: ${{secrets.AWS_REGION_DEV}}
+      
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+      
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+
+      LOG_LEVEL: ${{secrets.LOG_LEVEL_DEV}}
+      
+      DD_API_KEY: ${{secrets.DD_API_KEY_DEV}}
+      DD_ENV: ${{secrets.ENV_DEV}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          
+      - name: Install
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+          yarn install
+      
+      - name: Development Deploy 
+        run: |
+          sls deploy --stage ${{secrets.ENV_DEV}} --region ${{secrets.AWS_REGION_DEV}}
