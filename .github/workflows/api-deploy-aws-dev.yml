@@ -17,15 +17,17 @@ jobs:
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
-      
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
-
-      LOG_LEVEL: ${{secrets.LOG_LEVEL_DEV}}
-      
+      #========================================================================================#
+      LOG_LEVEL: ${{secrets.LOG_LEVEL}}
       DD_API_KEY: ${{secrets.DD_API_KEY_DEV}}
       DD_ENV: ${{secrets.ENV_DEV}}
+      AWS_DYNAMODB_REGION: ${{secrets.AWS_DYNAMODB_REGION}}
+      AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{secrets.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE}}
+      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN: ${{secrets.AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN}}
 
     steps:
       - name: Checkout
