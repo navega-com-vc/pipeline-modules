@@ -43,6 +43,11 @@ jobs:
           
       - name: Install
         run: |
+          echo $TESTE_ENV
+          echo $TESTE_ENV
+          echo $TESTE_ENV
+          echo $TESTE_ENV
+          echo $TESTE_ENV
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
