@@ -2,8 +2,9 @@ name: api-deploy-dev
 
 on:
   workflow_call:
-    secrets:
+    inputs:
       TESTE_ENV:
+        type: string
         required: false
 
 jobs:
@@ -23,7 +24,7 @@ jobs:
       AZURE_REGION: ${{secrets.AZURE_REGION_DEV}}
       AZURE_STAGE: ${{secrets.AZURE_STAGE_DEV}}
       AZURE_RESOURCE_GROUP: ${{secrets.AZURE_RESOURCE_GROUP_DEV}}
-      TESTE_ENV: ${{secrets.TESTE_ENV}}
+      TESTE_ENV: ${{inputs.TESTE_ENV}}
       APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_DEV}}
       
       DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
