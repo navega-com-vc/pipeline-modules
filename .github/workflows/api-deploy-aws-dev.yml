@@ -2,6 +2,21 @@ name: api-deploy-dev
 
 on:
   workflow_call:
+    secrets:
+      AWS_DYNAMODB_REGION:
+        required: false
+      AWS_DYNAMODB_VERSION:
+        required: false
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE:
+        required: false
+      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN:
+        required: false
+      DD_API_KEY:
+        required: false
+      DD_ENV:
+        required: false
+      LOG_LEVEL:
+        required: false
 
 jobs:
   deploy-dev:
