@@ -23,7 +23,7 @@ jobs:
       #========================================================================================#
       LOG_LEVEL: ${{secrets.LOG_LEVEL}}
       DD_API_KEY: ${{secrets.DD_API_KEY_DEV}}
-      DD_ENV: ${{secrets.ENV_DEV}}
+      DD_ENV: ${{secrets.DD_ENV}}
       AWS_DYNAMODB_REGION: ${{secrets.AWS_DYNAMODB_REGION}}
       AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION}}
       AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{secrets.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE}}
