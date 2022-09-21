@@ -38,8 +38,8 @@ jobs:
       
       - name: Sandbox Deploy
         run: |
-          az storage blob delete-batch -s "\$web" --connection-string ${{secrets.AZURE_STORAGE_SBX}}
-          az storage blob upload-batch -d "\$web" -s dist --connection-string ${{secrets.AZURE_STORAGE_SBX}}
+          az storage blob delete-batch -s "\$web" --connection-string "${{secrets.AZURE_STORAGE_SBX}}"
+          az storage blob upload-batch -d "\$web" -s dist --connection-string "${{secrets.AZURE_STORAGE_SBX}}"
           az login --service-principal --username ${{secrets.AZURE_FRONT_DOOR_APP_ID}} --password ${{secrets.AZURE_FRONT_DOOR_SECRET}} --tenant ${{secrets.AZURE_TENANT_ID}}
           az extension add --name front-door
           az network front-door purge-endpoint -g ${{secrets.AZURE_NETWORK_RG_SBX}} -n ${{secrets.AZURE_FRONT_DOOR_NAME_SBX}} --content-paths "/*"
