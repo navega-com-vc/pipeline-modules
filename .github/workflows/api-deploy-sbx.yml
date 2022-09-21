@@ -51,6 +51,6 @@ jobs:
           export APP_NAME=$(node -p "require('./package.json').name")
           sls package
           az login --service-principal --username ${{secrets.AZURE_FUNCTIONS_APP_ID_SBX}} --password ${{secrets.AZURE_FUNCTIONS_SECRET_SBX}} --tenant ${{secrets.AZURE_TENANT_ID}}
-          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-sbx-$APP_NAME --src .serverless/$APP_NAME.zip
+          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_SBX}} -n aquario-eus2-sbx-$APP_NAME --src .serverless/$APP_NAME.zip
           sls deploy
-          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_DEV}} -n aquario-eus2-sbx-$APP_NAME --src .serverless/$APP_NAME.zip
+          az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_SBX}} -n aquario-eus2-sbx-$APP_NAME --src .serverless/$APP_NAME.zip
