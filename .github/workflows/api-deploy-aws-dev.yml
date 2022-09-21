@@ -31,9 +31,9 @@ jobs:
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
       
-      LOG_LEVEL: ${{secrets.LOG_LEVEL}}
+      LOG_LEVEL: ${{secrets.LOG_LEVEL_DEV}}
       DD_API_KEY: ${{secrets.DD_API_KEY_DEV}}
-      DD_ENV: ${{secrets.DD_ENV}}
+      DD_ENV: ${{secrets.ENV_DEV}}
       
       AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_DEV}}
       AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION}}
