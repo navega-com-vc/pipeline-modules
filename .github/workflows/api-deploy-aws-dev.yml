@@ -9,26 +9,26 @@ on:
         required: true
       ARTIFACTORY_EMAIL:
         required: true
-      AWS_ACCESS_KEY_ID:
+      AWS_ACCESS_KEY_ID_DEV:
         required: true
-      AWS_SECRET_ACCESS_KEY:
+      AWS_SECRET_ACCESS_KEY_DEV:
         required: true
-      AWS_REGION:
+      AWS_REGION_DEV:
         required: true
       DD_API_KEY:
         required: true
-      LOG_LEVEL:
+      LOG_LEVEL_DEV:
         required: true
       ENV_DEV:
         required: true
         
-      AWS_DYNAMODB_REGION:
+      AWS_DYNAMODB_REGION_DEV:
         required: false
-      AWS_DYNAMODB_VERSION:
+      AWS_DYNAMODB_VERSION_DEV:
         required: false
-      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE:
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV:
         required: false
-      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN:
+      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN_DEV:
         required: false
 
 jobs:
