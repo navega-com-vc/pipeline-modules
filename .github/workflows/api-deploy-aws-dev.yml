@@ -11,12 +11,6 @@ on:
         required: false
       AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN:
         required: false
-      DD_API_KEY:
-        required: false
-      DD_ENV:
-        required: false
-      LOG_LEVEL:
-        required: false
 
 jobs:
   deploy-dev:
