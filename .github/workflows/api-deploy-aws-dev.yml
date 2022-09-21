@@ -1,8 +1,27 @@
-name: api-deploy-dev
+name: api-deploy-aws-dev
 
 on:
   workflow_call:
     secrets:
+      ARTIFACTORY_NPM_REGISTRY:
+        required: true
+      ARTIFACTORY_AUTH:
+        required: true
+      ARTIFACTORY_EMAIL:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_REGION:
+        required: true
+      DD_API_KEY:
+        required: true
+      LOG_LEVEL:
+        required: true
+      ENV_DEV:
+        required: true
+        
       AWS_DYNAMODB_REGION:
         required: false
       AWS_DYNAMODB_VERSION:
