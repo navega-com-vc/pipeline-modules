@@ -2,36 +2,72 @@ name: api-deploy-stg
 
 on:
   workflow_call:
+    secrets:
+      ARTIFACTORY_NPM_REGISTRY:
+        required: true
+      ARTIFACTORY_AUTH:
+        required: true
+      ARTIFACTORY_EMAIL:
+        required: true
+      AWS_ACCESS_KEY_ID_STG:
+        required: true
+      AWS_SECRET_ACCESS_KEY_STG:
+        required: true
+      AWS_REGION_STG:
+        required: true
+      DD_API_KEY:
+        required: true
+      LOG_LEVEL_STG:
+        required: true
+      ENV_STG:
+        required: true
+        
+      AWS_DYNAMODB_REGION_STG:
+        required: false
+      AWS_DYNAMODB_VERSION_STG:
+        required: false
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_STG:
+        required: false
+      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN_STG:
+        required: false
 
 jobs:
   deploy-stg:
     if: github.ref == 'refs/heads/stg'
     runs-on: ubuntu-latest
-    container: f3capital/aquario:latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
     env:
-      DATABASE_HOST: ${{secrets.DATABASE_HOST_STG}}
-      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_STG}}
-      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_STG}}
-      DATABASE_NAME: ${{secrets.DATABASE_NAME_STG}}
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
       
-      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_STG}}
-      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_STG}}
-      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_STG}}
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
 
       LOG_LEVEL: ${{secrets.LOG_LEVEL_STG}}
-      
-      DD_API_KEY: ${{secrets.DD_API_KEY_STG}}
+      DD_API_KEY: ${{secrets.DD_API_KEY}}
       DD_ENV: ${{secrets.ENV_STG}}
+      
+      AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_STG}}
+      AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_STG}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{secrets.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_STG}}
+      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN: ${{secrets.AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN_STG}}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
           
       - name: Install
         run: |
@@ -46,4 +82,5 @@ jobs:
           export AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_STG}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_STG}}
           export AWS_REGION=${{secrets.AWS_REGION_STG}}
+          npm i -g serverless
           sls deploy --stage ${{secrets.ENV_STG}}
