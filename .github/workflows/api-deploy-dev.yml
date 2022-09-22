@@ -3,6 +3,12 @@ name: api-deploy-dev
 on:
   workflow_call:
     secrets:
+      ARTIFACTORY_NPM_REGISTRY:
+        required: true
+      ARTIFACTORY_AUTH:
+        required: true
+      ARTIFACTORY_EMAIL:
+        required: true
       AZURE_SUBSCRIPTION_ID: 
         required: true
       AZURE_TENANT_ID:
