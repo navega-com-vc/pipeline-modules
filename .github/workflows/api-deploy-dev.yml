@@ -17,6 +17,10 @@ on:
         required: true
       AZURE_CLIENT_SECRET:
         required: true
+      AZURE_FUNCTIONS_APP_ID:
+        required: true
+      AZURE_FUNCTIONS_SECRET:
+        required: true
       AZURE_REGION_DEV:
         required: true
       AZURE_RESOURCE_GROUP_DEV:
