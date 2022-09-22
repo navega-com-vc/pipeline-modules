@@ -2,6 +2,52 @@ name: api-deploy-dev
 
 on:
   workflow_call:
+    secrets:
+      AZURE_SUBSCRIPTION_ID: 
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_CLIENT_SECRET:
+        required: true
+      AZURE_REGION_DEV:
+        required: true
+      AZURE_RESOURCE_GROUP_DEV:
+        required: true
+      APPINSIGHTS_INSTRUMENTATIONKEY_DEV:
+        required: true
+      DATABASE_HOST_DEV:
+        required: true
+      DATABASE_USERNAME_DEV:
+        required: true
+      DATABASE_PASSWORD_DEV:
+        required: true
+      DATABASE_NAME_DEV:
+        required: true
+      ENV_DEV:
+        required: true
+
+      KEYCLOAK_URL_DEV:
+        required: false
+      KEYCLOAK_USERNAME_ADMIN_DEV:
+        required: false
+      KEYCLOAK_PASSWORD_ADMIN_DEV:
+        required: false
+      
+      AWS_REGION_DEV:
+        required: false
+      AWS_ACCESS_KEY_ID_DEV:
+        required: false
+      AWS_SECRET_ACCESS_KEY_DEV:
+        required: false
+      
+      EVENTBUS_NAME:
+        required: false
+      EVENTBUS_SOURCE:
+        required: false
+      EVENTBUS_DETAIL_TYPE:
+        required: false
 
 jobs:
   deploy-dev:
@@ -31,6 +77,13 @@ jobs:
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+      
+      EVENTBUS_NAME: ${{ secrets.EVENTBUS_NAME }}
+      EVENTBUS_REGION: ${{ secrets.AWS_REGION_DEV }}
+      EVENTBUS_SOURCE: ${{ secrets.EVENTBUS_SOURCE }}
+      EVENTBUS_DETAIL_TYPE: ${{ secrets.EVENTBUS_DETAIL_TYPE }}
+      EVENTBUS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+      EVENTBUS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
 
     steps:
       - name: Checkout
