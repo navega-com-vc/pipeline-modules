@@ -27,6 +27,17 @@ on:
         required: true
       APPINSIGHTS_INSTRUMENTATIONKEY_DEV:
         required: true
+        
+      AWS_ACCESS_KEY_ID_DEV:
+        required: false
+      AWS_SECRET_ACCESS_KEY_DEV:
+        required: false
+      AWS_REGION_DEV:
+        required: false
+
+      ENV_DEV:
+        required: true
+
       DATABASE_HOST_DEV:
         required: true
       DATABASE_USERNAME_DEV:
@@ -35,21 +46,19 @@ on:
         required: true
       DATABASE_NAME_DEV:
         required: true
-      ENV_DEV:
-        required: true
+
+      EMAIL_PROVIDER_DEV:
+        required: false
+      EMAIL_USERNAME_DEV:
+        required: false
+      EMAIL_PASSWORD_DEV:
+        required: false
 
       KEYCLOAK_URL_DEV:
         required: false
       KEYCLOAK_USERNAME_ADMIN_DEV:
         required: false
       KEYCLOAK_PASSWORD_ADMIN_DEV:
-        required: false
-      
-      AWS_REGION_DEV:
-        required: false
-      AWS_ACCESS_KEY_ID_DEV:
-        required: false
-      AWS_SECRET_ACCESS_KEY_DEV:
         required: false
       
       EVENTBUS_NAME:
@@ -83,6 +92,10 @@ jobs:
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+      
+      EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER_DEV }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_DEV }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
       
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
