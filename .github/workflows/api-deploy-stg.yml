@@ -21,21 +21,21 @@ on:
         required: true
       AZURE_FUNCTIONS_SECRET:
         required: true
-      AZURE_REGION_DEV:
+      AZURE_REGION_STG:
         required: true
-      AZURE_RESOURCE_GROUP_DEV:
+      AZURE_RESOURCE_GROUP_STG:
         required: true
-      APPINSIGHTS_INSTRUMENTATIONKEY_DEV:
+      APPINSIGHTS_INSTRUMENTATIONKEY_STG:
         required: true
         
-      AWS_ACCESS_KEY_ID_DEV:
+      AWS_ACCESS_KEY_ID_STG:
         required: false
-      AWS_SECRET_ACCESS_KEY_DEV:
+      AWS_SECRET_ACCESS_KEY_STG:
         required: false
-      AWS_REGION_DEV:
+      AWS_REGION_STG:
         required: false
 
-      ENV_DEV:
+      ENV_STG:
         required: true
 
       DATABASE_HOST_DEV:
@@ -82,11 +82,11 @@ jobs:
       AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
       AZURE_CLIENT_ID: ${{secrets.AZURE_CLIENT_ID}}
       AZURE_CLIENT_SECRET: ${{secrets.AZURE_CLIENT_SECRET}}
-      AZURE_REGION: ${{secrets.AZURE_REGION_DEV}}
-      AZURE_STAGE: ${{secrets.ENV_DEV}}
-      AZURE_RESOURCE_GROUP: ${{secrets.AZURE_RESOURCE_GROUP_DEV}}
+      AZURE_REGION: ${{secrets.AZURE_REGION_STG}}
+      AZURE_STAGE: ${{secrets.ENV_STG}}
+      AZURE_RESOURCE_GROUP: ${{secrets.AZURE_RESOURCE_GROUP_STG}}
 
-      APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_DEV}}
+      APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_STG}}
       
       DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
@@ -102,11 +102,11 @@ jobs:
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
       
       EVENTBUS_NAME: ${{ secrets.EVENTBUS_NAME }}
-      EVENTBUS_REGION: ${{ secrets.AWS_REGION_DEV }}
+      EVENTBUS_REGION: ${{ secrets.AWS_REGION_STG }}
       EVENTBUS_SOURCE: ${{ secrets.EVENTBUS_SOURCE }}
       EVENTBUS_DETAIL_TYPE: ${{ secrets.EVENTBUS_DETAIL_TYPE }}
-      EVENTBUS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-      EVENTBUS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+      EVENTBUS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID_STG }}
+      EVENTBUS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_STG }}
 
     steps:
       - name: Checkout
@@ -130,4 +130,3 @@ jobs:
           az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_STG}} -n aquario-eus2-stg-$APP_NAME --src .serverless/$APP_NAME.zip
           sls deploy
           az functionapp deployment source config-zip -g ${{secrets.AZURE_RESOURCE_GROUP_STG}} -n aquario-eus2-stg-$APP_NAME --src .serverless/$APP_NAME.zip
-          
