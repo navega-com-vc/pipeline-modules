@@ -21,7 +21,7 @@ on:
 
 jobs:
   quality:
-    if: github.head_ref == 'refs/heads/dev' || github.head_ref == 'refs/heads/stg' || github.head_ref == 'refs/heads/sbx' || github.head_ref == 'refs/heads/main'
+    if: github.head_ref != 'refs/heads/dev' || github.head_ref != 'refs/heads/stg' || github.head_ref != 'refs/heads/sbx' || github.head_ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
     concurrency:
