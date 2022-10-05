@@ -21,7 +21,7 @@ on:
 
 jobs:
   quality:
-    if: github.ref == 'refs/heads/dev' || github.ref != 'refs/heads/stg' || github.ref != 'refs/heads/sbx' || github.ref != 'refs/heads/main'
+    if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
     concurrency:
