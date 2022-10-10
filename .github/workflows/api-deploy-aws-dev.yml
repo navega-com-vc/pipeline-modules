@@ -9,18 +9,30 @@ on:
         required: true
       ARTIFACTORY_EMAIL:
         required: true
+      
       AWS_ACCESS_KEY_ID_DEV:
         required: true
       AWS_SECRET_ACCESS_KEY_DEV:
         required: true
       AWS_REGION_DEV:
         required: true
+      
       DD_API_KEY:
         required: true
+      
       LOG_LEVEL_DEV:
         required: true
+      
       ENV_DEV:
         required: true
+      
+      NAVEGA_API_URL_DEV:
+        required: true
+        
+      KEYCLOAK_WORKFLOW_USERNAME_DEV:
+        required: false
+      KEYCLOAK_WORKFLOW_PASSWORD_DEV:
+        required: false
         
       AWS_DYNAMODB_REGION_DEV:
         required: false
@@ -49,9 +61,14 @@ jobs:
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
       
+      KEYCLOAK_WORKFLOW_USERNAME: ${{secrets.KEYCLOAK_WORKFLOW_USERNAME_DEV}}
+      KEYCLOAK_WORKFLOW_PASSWORD: ${{secrets.KEYCLOAK_WORKFLOW_PASSWORD_DEV}}
+      
+      NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
+      
       LOG_LEVEL: ${{secrets.LOG_LEVEL_DEV}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
-      DD_ENV: ${{secrets.ENV_DEV}}
+      ENV: ${{secrets.ENV_DEV}}
       
       AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_DEV}}
       AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_DEV}}
