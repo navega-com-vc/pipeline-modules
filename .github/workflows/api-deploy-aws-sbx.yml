@@ -51,7 +51,7 @@ jobs:
 
       LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
-      DD_ENV: ${{secrets.ENV_SBX}}
+      ENV: ${{secrets.ENV_SBX}}
       
       AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_SBX}}
       AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_SBX}}
