@@ -70,7 +70,7 @@ jobs:
 
       LOG_LEVEL: ${{secrets.LOG_LEVEL_STG}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
-      DD_ENV: ${{secrets.ENV_STG}}
+      ENV: ${{secrets.ENV_STG}}
       
       AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_STG}}
       AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_STG}}
