@@ -27,7 +27,7 @@ on:
         required: true
       
       NAVEGA_API_URL_DEV:
-        required: true
+        required: false
         
       KEYCLOAK_WORKFLOW_USERNAME_DEV:
         required: false
