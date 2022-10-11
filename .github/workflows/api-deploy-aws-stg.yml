@@ -2,6 +2,10 @@ name: api-deploy-stg
 
 on:
   workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+        
     secrets:
       ARTIFACTORY_NPM_REGISTRY:
         required: true
@@ -9,18 +13,30 @@ on:
         required: true
       ARTIFACTORY_EMAIL:
         required: true
+      
       AWS_ACCESS_KEY_ID_STG:
         required: true
       AWS_SECRET_ACCESS_KEY_STG:
         required: true
       AWS_REGION_STG:
         required: true
+      
       DD_API_KEY:
         required: true
+      
       LOG_LEVEL_STG:
         required: true
+      
       ENV_STG:
         required: true
+      
+      NAVEGA_API_URL_STG:
+        required: false
+        
+      KEYCLOAK_WORKFLOW_USERNAME_STG:
+        required: false
+      KEYCLOAK_WORKFLOW_PASSWORD_STG:
+        required: false
         
       AWS_DYNAMODB_REGION_STG:
         required: false
@@ -48,6 +64,11 @@ jobs:
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+      
+      KEYCLOAK_WORKFLOW_USERNAME: ${{secrets.KEYCLOAK_WORKFLOW_USERNAME_STG}}
+      KEYCLOAK_WORKFLOW_PASSWORD: ${{secrets.KEYCLOAK_WORKFLOW_PASSWORD_STG}}
+
+      NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_STG}}
 
       LOG_LEVEL: ${{secrets.LOG_LEVEL_STG}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
@@ -70,6 +91,7 @@ jobs:
           node-version: 16
           
       - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
@@ -77,7 +99,8 @@ jobs:
           npm config set -- 'always-auth' "true"
           yarn install
       
-      - name: Staging Deploy 
+      - name: Staging Deploy
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           export AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_STG}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_STG}}
