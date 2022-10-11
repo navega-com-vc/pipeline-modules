@@ -18,6 +18,8 @@ on:
       CONTINUE_ON_SONARQUBE_ERROR:
         type: boolean
         default: false
+      WORKING_DIRECTORY:
+        type: string
 
 jobs:
   quality:
@@ -48,6 +50,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
@@ -57,20 +60,24 @@ jobs:
           
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn lint
           
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn audit --groups dependencies
           
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn test
           
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password='${{secrets.SONAR_PASSWORD}}' -Dsonar.sourceEncoding=UTF-8
