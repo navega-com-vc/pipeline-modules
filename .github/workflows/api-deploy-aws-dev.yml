@@ -44,8 +44,6 @@ on:
         required: false
       AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV:
         required: false
-      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN_DEV:
-        required: false
 
 jobs:
   deploy-dev:
@@ -77,7 +75,6 @@ jobs:
       AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_DEV}}
       AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_DEV}}
       AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{secrets.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV}}
-      AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN: ${{secrets.AWS_LAMBDA_TRIGGER_STEP_FUNCTION_ARN_DEV}}
 
     steps:
       - name: Checkout
