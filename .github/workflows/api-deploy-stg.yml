@@ -67,6 +67,8 @@ on:
         required: false
       EVENTBUS_DETAIL_TYPE:
         required: false
+      NAVEGA_API_URL_STG:
+        required: false
         
 jobs:
   deploy-stg:
@@ -107,7 +109,8 @@ jobs:
       EVENTBUS_DETAIL_TYPE: ${{ secrets.EVENTBUS_DETAIL_TYPE }}
       EVENTBUS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID_STG }}
       EVENTBUS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_STG }}
-
+      NAVEGA_API_URL: ${{ secrets.NAVEGA_API_URL_STG }}
+  
     steps:
       - name: Checkout
         uses: actions/checkout@v3
