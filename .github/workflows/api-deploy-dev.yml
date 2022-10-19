@@ -111,7 +111,7 @@ jobs:
       EVENTBUS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
       EVENTBUS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
     
-      NAVEGA_API_URL_DEV: ${{ secrets.NAVEGA_API_URL_DEV }}
+      NAVEGA_API_URL: ${{ secrets.NAVEGA_API_URL_DEV }}
       
     steps:
       - name: Checkout
