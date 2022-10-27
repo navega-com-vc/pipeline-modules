@@ -37,6 +37,12 @@ on:
 
       ENV_DEV:
         required: true
+      
+      LOG_LEVEL_DEV:
+        required: false
+            
+      DD_API_KEY:
+        required: false
 
       DATABASE_HOST_DEV:
         required: true
@@ -68,8 +74,6 @@ on:
       EVENTBUS_DETAIL_TYPE:
         required: false
       
-      AQUARIO_API_URL_DEV:
-        required: false
       NAVEGA_API_URL_DEV:
         required: false
 
@@ -113,8 +117,11 @@ jobs:
       EVENTBUS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
       EVENTBUS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
     
-      AQUARIO_API_URL: ${{ secrets.AQUARIO_API_URL_DEV }}
       NAVEGA_API_URL: ${{ secrets.NAVEGA_API_URL_DEV }}
+      
+      ENV: ${{ secrets.ENV_DEV }}
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL_DEV }}
       
     steps:
       - name: Checkout
