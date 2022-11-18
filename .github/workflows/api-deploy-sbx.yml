@@ -67,6 +67,9 @@ on:
         required: false
       EVENTBUS_DETAIL_TYPE:
         required: false
+        
+      NAVEGA_API_URL_SBX:
+        required: false
 
 jobs:
   deploy-sbx:
@@ -107,6 +110,8 @@ jobs:
       EVENTBUS_DETAIL_TYPE: ${{ secrets.EVENTBUS_DETAIL_TYPE }}
       EVENTBUS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID_SBX }}
       EVENTBUS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_SBXDEV }}
+      
+      NAVEGA_API_URL: ${{ secrets.NAVEGA_API_URL_SBX }}
 
     steps:
       - name: Checkout
