@@ -33,6 +33,8 @@ on:
       NAVEGA_API_URL_DEV:
         required: false
         
+      KEYCLOAK_URL_DEV:
+        required: false
       KEYCLOAK_WORKFLOW_USERNAME_DEV:
         required: false
       KEYCLOAK_WORKFLOW_PASSWORD_DEV:
