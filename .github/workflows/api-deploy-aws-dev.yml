@@ -35,6 +35,10 @@ on:
         
       KEYCLOAK_URL_DEV:
         required: false
+      KEYCLOAK_USERNAME_ADMIN_DEV:
+        required: false
+      KEYCLOAK_PASSWORD_ADMIN_DEV:
+        required: false
       KEYCLOAK_WORKFLOW_USERNAME_DEV:
         required: false
       KEYCLOAK_WORKFLOW_PASSWORD_DEV:
