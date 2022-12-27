@@ -20,6 +20,15 @@ on:
         required: true
       AWS_REGION_DEV:
         required: true
+        
+      DATABASE_HOST_DEV:
+        required: true
+      DATABASE_USERNAME_DEV:
+        required: true
+      DATABASE_PASSWORD_DEV:
+        required: true
+      DATABASE_NAME_DEV:
+        required: true
       
       DD_API_KEY:
         required: true
@@ -38,10 +47,6 @@ on:
       KEYCLOAK_USERNAME_ADMIN_DEV:
         required: false
       KEYCLOAK_PASSWORD_ADMIN_DEV:
-        required: false
-      KEYCLOAK_WORKFLOW_USERNAME_DEV:
-        required: false
-      KEYCLOAK_WORKFLOW_PASSWORD_DEV:
         required: false
         
       AWS_DYNAMODB_REGION_DEV:
@@ -68,9 +73,6 @@ jobs:
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
-      
-      KEYCLOAK_WORKFLOW_USERNAME: ${{secrets.KEYCLOAK_WORKFLOW_USERNAME_DEV}}
-      KEYCLOAK_WORKFLOW_PASSWORD: ${{secrets.KEYCLOAK_WORKFLOW_PASSWORD_DEV}}
       
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
       
