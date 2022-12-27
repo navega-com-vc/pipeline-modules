@@ -33,6 +33,15 @@ on:
       NAVEGA_API_URL_STG:
         required: false
         
+      DATABASE_HOST_DEV:
+        required: false
+      DATABASE_USERNAME_DEV:
+        required: false
+      DATABASE_PASSWORD_DEV:
+        required: false
+      DATABASE_NAME_DEV:
+        required: false
+        
       KEYCLOAK_URL_DEV:
         required: false
       KEYCLOAK_USERNAME_ADMIN_DEV:
