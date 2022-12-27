@@ -22,13 +22,13 @@ on:
         required: true
         
       DATABASE_HOST_DEV:
-        required: true
+        required: false
       DATABASE_USERNAME_DEV:
-        required: true
+        required: false
       DATABASE_PASSWORD_DEV:
-        required: true
+        required: false
       DATABASE_NAME_DEV:
-        required: true
+        required: false
       
       DD_API_KEY:
         required: true
