@@ -5,6 +5,9 @@ on:
     inputs:
       WORKING_DIRECTORY:
         type: string
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
         
     secrets:
       ARTIFACTORY_NPM_REGISTRY:
@@ -63,7 +66,7 @@ on:
 jobs:
   deploy-stg:
     if: github.ref == 'refs/heads/stg'
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.RUNS_ON }}
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
