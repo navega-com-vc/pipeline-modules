@@ -33,7 +33,22 @@ on:
       
       NAVEGA_API_URL_SBX:
         required: false
+        
+      DATABASE_HOST_SBX:
+        required: false
+      DATABASE_USERNAME_SBX:
+        required: false
+      DATABASE_PASSWORD_SBX:
+        required: false
+      DATABASE_NAME_SBX:
+        required: false
       
+      KEYCLOAK_URL_SBX:
+        required: false
+      KEYCLOAK_USERNAME_ADMIN_SBX:
+        required: false
+      KEYCLOAK_PASSWORD_ADMIN_SBX:
+        required: false
       KEYCLOAK_WORKFLOW_USERNAME_SBX:
         required: false
       KEYCLOAK_WORKFLOW_PASSWORD_SBX:
