@@ -13,7 +13,7 @@ jobs:
   deploy-dev:
 #     if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
-    container: f3capital/aquario:latest
+#     container: f3capital/aquario:latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
