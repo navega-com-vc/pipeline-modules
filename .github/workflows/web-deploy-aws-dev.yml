@@ -19,6 +19,7 @@ jobs:
       cancel-in-progress: true
     
     env:
+      API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
 
     steps:
       - name: Checkout
