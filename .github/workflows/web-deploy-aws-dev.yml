@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy-dev:
-    if: github.ref == 'refs/heads/dev'
+#     if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     container: f3capital/aquario:latest
     concurrency:
