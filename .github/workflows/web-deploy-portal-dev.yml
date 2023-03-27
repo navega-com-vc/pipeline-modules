@@ -13,13 +13,20 @@ jobs:
   deploy-dev:
 #     if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
-#     container: f3capital/aquario:latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     
     env:
-      API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
+      PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL_DEV }}
+
+      PORTAL_AUTH_REMOTE_ENTRY: $PORTAL_BASE_URL/auth/remoteEntry.js
+      PORTAL_PROFILE_REMOTE_ENTRY: $PORTAL_BASE_URL/profile/remoteEntry.js
+      PORTAL_DASHBOARD_REMOTE_ENTRY: $PORTAL_BASE_URL/dashboard/remoteEntry.js
+      
+      PORTAL_SHELL_MANIFEST: $PORTAL_BASE_URL/assets/mf.manifest.json
+      
+      PORTAL_API_URL: ${{ secrets.NAVEGA_API_URL_DEV }}
 
     steps:
       - name: Checkout
