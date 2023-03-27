@@ -1,0 +1,74 @@
+name: web-deploy-aws-stg
+
+on:
+  workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+      BUCKET_PATH:
+        type: string
+        required: true
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/stg'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    
+    env:
+      PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL_STG }}
+
+      PORTAL_AUTH_REMOTE_ENTRY: ${{ secrets.PORTAL_BASE_URL_STG }}/auth/remoteEntry.js
+      PORTAL_PROFILE_REMOTE_ENTRY: ${{ secrets.PORTAL_BASE_URL_STG }}/profile/remoteEntry.js
+      PORTAL_DASHBOARD_REMOTE_ENTRY: ${{ secrets.PORTAL_BASE_URL_STG }}/dashboard/remoteEntry.js
+      
+      PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_STG }}/assets/mf.manifest.json
+      
+      PORTAL_API_URL: ${{ secrets.NAVEGA_API_URL_STG }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Setup Jfrog
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+        
+      - name: Install & Build Commons
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          cd ../libs/navega-portal-common && yarn install && yarn build
+          
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn install
+      - name: Build
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn build
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STG }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STG }}
+          aws-region: ${{ secrets.AWS_REGION_STG }}
+
+      - name: Development Deploy
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete
+          aws cloudfront create-invalidation --distribution-id=ADD_DISTIRBUTION_HERE --paths "/*"
