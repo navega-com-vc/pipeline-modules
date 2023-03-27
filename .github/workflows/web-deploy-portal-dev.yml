@@ -32,13 +32,22 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install
+      - name: Setup Jfrog
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           npm config set -- 'always-auth' "true"
+        
+      - name: Install & Build Commons
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          cd ../libs/navega-portal-common && yarn install && yarn build
+          
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
           yarn install
 
       - name: Build
