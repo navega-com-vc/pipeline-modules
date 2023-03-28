@@ -83,4 +83,4 @@ jobs:
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url='${{ env.SQ_HOST_URL }}' -Dsonar.login='${{ env.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          yarn sonar -Dsonar.host.url='https://${{ env.SQ_HOST_URL }}' -Dsonar.login='${{ env.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
