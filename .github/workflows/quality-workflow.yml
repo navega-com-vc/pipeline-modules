@@ -43,6 +43,9 @@ jobs:
       KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
       KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
       
+      SQ_HOST_URL: ${{ secrest.SONAR_URL }}
+      SQ_LOGIN: ${ secrets. SONAR_LOGIN }
+      
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -80,4 +83,4 @@ jobs:
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{secrets.SONAR_URL}} -Dsonar.login=${{secrets.SONAR_USERNAME}} -Dsonar.password='${{secrets.SONAR_PASSWORD}}' -Dsonar.sourceEncoding=UTF-8
+          yarn sonar -Dsonar.host.url=${{ env.SQ_HOST_URL }} -Dsonar.login=${{ env.SQ_LOGIN }} -Dsonar.sourceEncoding=UTF-8
