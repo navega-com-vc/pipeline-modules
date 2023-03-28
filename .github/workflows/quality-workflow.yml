@@ -80,4 +80,4 @@ jobs:
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url='https://sonar.navega.com.vc' -Dsonar.login='${{ env.SONAR_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          yarn sonar -Dsonar.host.url='https://sonar.navega.com.vc' -Dsonar.login='${{ secrets.SONAR_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
