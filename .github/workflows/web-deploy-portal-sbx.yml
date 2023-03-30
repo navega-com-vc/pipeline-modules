@@ -10,7 +10,7 @@ on:
         required: true
 
 jobs:
-  deploy-dev:
+  deploy-sbx:
     if: github.ref == 'refs/heads/sbx'
     runs-on: ubuntu-latest
     concurrency:
