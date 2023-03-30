@@ -10,7 +10,7 @@ on:
         required: true
 
 jobs:
-  deploy-dev:
+  deploy-stg:
     if: github.ref == 'refs/heads/stg'
     runs-on: ubuntu-latest
     concurrency:
@@ -71,4 +71,4 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete
-          aws cloudfront create-invalidation --distribution-id=ADD_DISTIRBUTION_HERE --paths "/*"
+          aws cloudfront create-invalidation --distribution-id=E1XRBL09UFC26B --paths "/*"
