@@ -90,6 +90,10 @@ jobs:
       AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_SBX}}
       AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_SBX}}
       AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{secrets.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_SBX}}
+      
+      EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER_DEV }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_DEV }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
 
     steps:
       - name: Checkout
