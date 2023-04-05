@@ -20,10 +20,6 @@ jobs:
     env:
       PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL_DEV }}
 
-      PORTAL_AUTH_REMOTE_ENTRY: ${{ secrets.PORTAL_BASE_URL_DEV }}/auth/remoteEntry.js
-      PORTAL_PROFILE_REMOTE_ENTRY: ${{ secrets.PORTAL_BASE_URL_DEV }}/profile/remoteEntry.js
-      PORTAL_DASHBOARD_REMOTE_ENTRY: ${{ secrets.PORTAL_BASE_URL_DEV }}/dashboard/remoteEntry.js
-      
       PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_DEV }}/assets/mf.manifest.json
       
       PORTAL_API_URL: ${{ secrets.NAVEGA_API_URL_DEV }}
