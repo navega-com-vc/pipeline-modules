@@ -79,5 +79,4 @@ jobs:
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          yarn sonar -Dsonar.host.url=${{secrets.SQ_URL}} -Dsonar.login='${{secrets.SQ_LOGIN}}' -Dsonar.sourceEncoding=UTF-8
+        run: yarn sonar -Dsonar.host.url=https://sonar.navega.com.vc -Dsonar.login='${{secrets.SQ_LOGIN}}' -Dsonar.sourceEncoding=UTF-8
