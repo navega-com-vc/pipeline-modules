@@ -52,6 +52,8 @@ jobs:
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          echo artifact: ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          echo sq login ${{secrets.SQ_LOGIN}}
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
