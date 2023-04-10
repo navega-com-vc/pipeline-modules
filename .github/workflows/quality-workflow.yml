@@ -52,9 +52,6 @@ jobs:
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          echo artifact: ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
-          echo sq login: ${{secrets.QF_TKN}}
-          echo base url: ${{secrets.PORTAL_BASE_URL_DEV}}
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
@@ -82,4 +79,5 @@ jobs:
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: yarn sonar -Dsonar.host.url=https://sonar.navega.com.vc -Dsonar.login='${{secrets.SQ_LOGIN}}' -Dsonar.sourceEncoding=UTF-8
+        run: |
+          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
