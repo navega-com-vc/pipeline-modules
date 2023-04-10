@@ -54,6 +54,7 @@ jobs:
         run: |
           echo artifact: ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           echo sq login ${{secrets.SQ_LOGIN}}
+          echo dd ${{secrets.DD_NAVEGA_PORTAL_APPLICATION_ID_SBX}}
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
