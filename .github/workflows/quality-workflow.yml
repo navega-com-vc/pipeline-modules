@@ -21,12 +21,6 @@ on:
       WORKING_DIRECTORY:
         type: string
 
-    secrets:
-      SQ_URL:
-        required: true
-      SQ_LOGIN:
-        required: true
-
 jobs:
   quality:
     if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
@@ -86,4 +80,4 @@ jobs:
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          yarn sonar -Dsonar.host.url=${{secrets.SQ_URL}} -Dsonar.login='${{secrets.SQ_LOGIN}}' -Dsonar.sourceEncoding=UTF-8
