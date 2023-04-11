@@ -25,8 +25,6 @@ on:
         required: true
       AZURE_RESOURCE_GROUP_SBX:
         required: true
-      APPINSIGHTS_INSTRUMENTATIONKEY_SBX:
-        required: true
         
       AWS_ACCESS_KEY_ID_SBX:
         required: false
@@ -89,8 +87,6 @@ jobs:
       AZURE_STAGE: ${{secrets.ENV_SBX}}
       AZURE_RESOURCE_GROUP: ${{secrets.AZURE_RESOURCE_GROUP_SBX}}
 
-      APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY_SBX}}
-      
       DATABASE_HOST: ${{secrets.DATABASE_HOST_SBX}}
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_SBX}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_SBX}}
