@@ -1,7 +1,6 @@
 name: web-deploy-aws-stg
 
 on:
-  workflow_dispatch:
   workflow_call:
     inputs:
       WORKING_DIRECTORY:
