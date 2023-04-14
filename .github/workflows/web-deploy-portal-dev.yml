@@ -1,6 +1,7 @@
 name: web-deploy-aws-dev
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
       WORKING_DIRECTORY:
@@ -31,7 +32,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Setup Jfrog
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -39,7 +40,7 @@ jobs:
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
-          npm config set -- 'always-auth' "true"
+          echo "always-auth=true" >> ~/.npmrc
         
       - name: Install & Build Commons
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
