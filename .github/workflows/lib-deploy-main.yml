@@ -28,7 +28,6 @@ jobs:
           ./jfrog --v
           ./jfrog config add --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
 
-          
       - name: Build 
         run: |
           yarn build
