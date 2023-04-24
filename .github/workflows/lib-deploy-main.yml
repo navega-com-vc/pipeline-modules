@@ -20,6 +20,7 @@ jobs:
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
+          npm config fix
           yarn install
       
       - name: Build 
@@ -38,9 +39,6 @@ jobs:
           jf npmc --server-id-resolve=f3capital --repo-resolve=${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --server-id-deploy=f3capital --repo-deploy=${{secrets.ARTIFACTORY_NPM_REPOSITORY}}
           export BUILD_NAME=$(node -p "require('./package.json').name")
           export BUILD_VERSION=$(node -p "require('./package.json').version")
-          cat ~/.npmrc
-          npm config fix
-          cat ~/.npmrc
-          jf npm install ${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
+          jf npm install --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
           jf rt bce $BUILD_NAME $BUILD_VERSION
-          jf npm publish ${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
+          jf npm publish --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
