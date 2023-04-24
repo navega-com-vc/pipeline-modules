@@ -21,8 +21,12 @@ jobs:
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
+      
+      - name: Build 
+        run: |
+          yarn build
 
-      - name: Setup Jfrog
+      - name: Deploy Lib
         uses: jfrog/setup-jfrog-cli@v3
         env:
           JF_URL: ${{ secrets.JF_URL }}
@@ -31,13 +35,6 @@ jobs:
           jf --v
           jf c add --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
           jf c show
-
-      - name: Build 
-        run: |
-          yarn build
-      
-      - name: Deploy Lib
-        run: |
           export BUILD_NAME=$(node -p "require('./package.json').name")
           export BUILD_VERSION=$(node -p "require('./package.json').version")
           jf npm install ${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
