@@ -33,7 +33,7 @@ jobs:
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
       - run: |
           jf --v
-          jf c add --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
+          jf c add f3capital --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
           jf c show
           jf npmc --server-id-resolve=f3capital --repo-resolve=${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --server-id-deploy=f3capital --repo-deploy=${{secrets.ARTIFACTORY_NPM_REPOSITORY}}
           export BUILD_NAME=$(node -p "require('./package.json').name")
