@@ -17,6 +17,8 @@ jobs:
       DATADOG_CLIENT_TOKEN: ${{secrets.DATADOG_CLIENT_TOKEN_STG}}
       DATADOG_APPLICATION_ID: ${{secrets.DATADOG_APPLICATION_ID_STG}}
       DATADOG_SAMPLE_RATE: ${{secrets.DATADOG_SAMPLE_RATE_STG}}
+      DATADOG_SERVICE: navega-web-stg
+      DATADOG_ENV: stg
     
     steps:
       - name: Checkout
