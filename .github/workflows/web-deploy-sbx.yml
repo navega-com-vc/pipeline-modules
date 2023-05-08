@@ -17,6 +17,8 @@ jobs:
       DATADOG_CLIENT_TOKEN: ${{secrets.DATADOG_CLIENT_TOKEN_SBX}}
       DATADOG_APPLICATION_ID: ${{secrets.DATADOG_APPLICATION_ID_SBX}}
       DATADOG_SAMPLE_RATE: ${{secrets.DATADOG_SAMPLE_RATE_SBX}}
+      DATADOG_SERVICE: navega-web-sbx
+      DATADOG_ENV: sbx
 
     steps:
       - name: Checkout
