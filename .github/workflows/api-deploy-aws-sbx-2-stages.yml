@@ -1,0 +1,126 @@
+name: api-deploy-sbx
+
+on:
+  workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
+
+    secrets:
+      ARTIFACTORY_NPM_REGISTRY:
+        required: true
+      ARTIFACTORY_AUTH:
+        required: true
+      ARTIFACTORY_EMAIL:
+        required: true
+        
+      AWS_ACCESS_KEY_ID_SBX:
+        required: true
+      AWS_SECRET_ACCESS_KEY_SBX:
+        required: true
+      AWS_REGION_SBX:
+        required: true
+      
+      ENV_SBX:
+        required: true
+      LOG_LEVEL_SBX:
+        required: true
+      DD_API_KEY:
+        required: true
+      
+      NAVEGA_API_URL_SBX:
+        required: false
+        
+      DATABASE_HOST_SBX:
+        required: false
+      DATABASE_USERNAME_SBX:
+        required: false
+      DATABASE_PASSWORD_SBX:
+        required: false
+      DATABASE_NAME_SBX:
+        required: false
+      
+      KEYCLOAK_URL_SBX:
+        required: false
+      KEYCLOAK_USERNAME_ADMIN_SBX:
+        required: false
+      KEYCLOAK_PASSWORD_ADMIN_SBX:
+        required: false
+      KEYCLOAK_WORKFLOW_USERNAME_SBX:
+        required: false
+      KEYCLOAK_WORKFLOW_PASSWORD_SBX:
+        required: false
+      
+      AWS_DYNAMODB_REGION_SBX:
+        required: false
+      AWS_DYNAMODB_VERSION_SBX:
+        required: false
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_SBX:
+        required: false
+
+jobs:
+  deploy-sbx:
+    if: github.ref == 'refs/heads/sbx'
+    runs-on: ${{ inputs.RUNS_ON }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_SBX}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_SBX}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_SBX}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_SBX}}
+      
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_SBX}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_SBX}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_SBX}}
+      KEYCLOAK_WORKFLOW_USERNAME: ${{secrets.KEYCLOAK_WORKFLOW_USERNAME_SBX}}
+      KEYCLOAK_WORKFLOW_PASSWORD: ${{secrets.KEYCLOAK_WORKFLOW_PASSWORD_SBX}}
+
+      LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
+      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      ENV: ${{secrets.ENV_SBX}}
+      
+      NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_SBX}}
+      
+      AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_SBX}}
+      AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_SBX}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{secrets.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_SBX}}
+      
+      EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER_DEV }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_DEV }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'always-auth' "true"
+          yarn install
+      
+      - name: Sandbox Deploy
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          export AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_SBX}}
+          export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
+          export AWS_REGION=${{secrets.AWS_REGION_SBX}}
+          npm i -g serverless
+          sls deploy --stage ${{secrets.ENV_SBX}} -c serverless.yml
+          sls deploy --stage ${{secrets.ENV_SBX}} -c serverless-2.yml
