@@ -1,0 +1,74 @@
+name: quality-workflow
+
+on:
+  workflow_call:
+    inputs:
+      CANCEL_IN_PROGRESS:
+        type: boolean
+        default: true
+      SKIP_LINT:
+        type: boolean
+        default: false
+      SKIP_AUDIT:
+        type: boolean
+        default: false
+      SKIP_TESTS:
+        type: boolean
+        default: false
+      CONTINUE_ON_SONARQUBE_ERROR:
+        type: boolean
+        default: false
+      WORKING_DIRECTORY:
+        type: string
+
+jobs:
+  quality:
+    if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Install & Build Libs
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          sh build-libs.sh
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          yarn install
+          
+      - name: Lint
+        if: ${{ !inputs.SKIP_LINT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn lint
+          
+      - name: Audit
+        if: ${{ !inputs.SKIP_AUDIT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn audit --groups dependencies
+          
+      - name: Tests
+        if: ${{ !inputs.SKIP_TESTS }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn test
+          
+      - name: Sonarqube
+        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
