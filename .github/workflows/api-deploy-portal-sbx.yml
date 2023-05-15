@@ -85,7 +85,7 @@ jobs:
       - name: Install & Build Libs
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          sh build-libs.sh
+          sh ../build-libs.sh
           
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
