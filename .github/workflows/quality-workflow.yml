@@ -3,6 +3,9 @@ name: quality-workflow
 on:
   workflow_call:
     inputs:
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
       CANCEL_IN_PROGRESS:
         type: boolean
         default: true
@@ -24,7 +27,7 @@ on:
 jobs:
   quality:
     if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.RUNS_ON }}
     container: f3capital/aquario:latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
