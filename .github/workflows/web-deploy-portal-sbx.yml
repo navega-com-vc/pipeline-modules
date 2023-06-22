@@ -18,7 +18,6 @@ jobs:
       cancel-in-progress: true
     
     env:
-      PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL_SBX }}
       PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_SBX }}/assets/mf.manifest.json      
       PORTAL_API_URL: ${{ secrets.PORTAL_API_URL_SBX }}
       DATADOG_APPLICATION_ID: ${{ secrets.DD_NAVEGA_PORTAL_APPLICATION_ID_SBX }}
