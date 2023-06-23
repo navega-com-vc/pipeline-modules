@@ -33,10 +33,21 @@ jobs:
         run: |
           yarn dev
       
-      - name: Development Deploy
+      - name: Development Deploy Azure
         run: |
           az storage blob delete-batch -s "\$web" --connection-string "${{secrets.AZURE_STORAGE_DEV}}"
           az storage blob upload-batch -d "\$web" -s dist --connection-string "${{secrets.AZURE_STORAGE_DEV}}"
           az login --service-principal --username ${{secrets.AZURE_FRONT_DOOR_APP_ID}} --password ${{secrets.AZURE_FRONT_DOOR_SECRET}} --tenant ${{secrets.AZURE_TENANT_ID}}
           az afd endpoint purge -g ${{secrets.AZURE_NETWORK_RG_DEV}} --profile-name ${{secrets.AZURE_FRONT_DOOR_NAME_DEV}} --endpoint-name ${{secrets.AZURE_FRONT_DOOR_ENDPOINT_NAME_DEV}} --content-paths '/*'
           
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          aws-region: ${{ secrets.AWS_REGION_DEV }}
+
+      - name: Development Deploy AWS
+        run: |
+          aws s3 sync dist/ s3://dev.navega.com.vc --delete
+          aws cloudfront create-invalidation --distribution-id=E2JGH2UQV5LDTK --paths "/*"
