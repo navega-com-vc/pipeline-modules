@@ -1,7 +1,6 @@
 name: web-deploy-stg
 
 on:
-  workflow_dispatch:
   workflow_call:
 
 jobs:
