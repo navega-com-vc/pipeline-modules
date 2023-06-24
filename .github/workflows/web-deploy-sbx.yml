@@ -7,7 +7,6 @@ jobs:
   deploy-sbx:
     if: github.ref == 'refs/heads/sbx'
     runs-on: ubuntu-latest
-    container: f3capital/aquario:latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -31,16 +30,21 @@ jobs:
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
-          npm config set -- 'always-auth' "true"
+          echo "always-auth=true" >> ~/.npmrc
           yarn install
 
       - name: Build
         run: |
           yarn build
       
-      - name: Sandbox Deploy
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_SBX }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SBX }}
+          aws-region: ${{ secrets.AWS_REGION_SBX }}
+
+      - name: Sandbox Deploy AWS
         run: |
-          az storage blob delete-batch -s "\$web" --connection-string "${{secrets.AZURE_STORAGE_SBX}}"
-          az storage blob upload-batch -d "\$web" -s dist --connection-string "${{secrets.AZURE_STORAGE_SBX}}"
-          az login --service-principal --username ${{secrets.AZURE_FRONT_DOOR_APP_ID}} --password ${{secrets.AZURE_FRONT_DOOR_SECRET}} --tenant ${{secrets.AZURE_TENANT_ID}}
-          az afd endpoint purge -g ${{secrets.AZURE_NETWORK_RG_SBX}} --profile-name ${{secrets.AZURE_FRONT_DOOR_NAME_SBX}} --endpoint-name ${{secrets.AZURE_FRONT_DOOR_ENDPOINT_NAME_SBX}} --content-paths '/*'
+          aws s3 sync dist/ s3://sbx.navega.com.vc --delete
+          aws cloudfront create-invalidation --distribution-id=E2KSPEOA8VYOAU --paths "/*"
