@@ -19,7 +19,7 @@ jobs:
     
     env:
       PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_DEV }}/assets/mf.manifest.json
-      PORTAL_API_URL: ${{ secrets.PORTAL_API_URL_DEV }}
+      PORTAL_API_URL: ${{ secrets.NAVEGA_PORTAL_API_URL_DEV }}
 
     steps:
       - name: Checkout
