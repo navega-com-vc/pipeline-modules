@@ -58,6 +58,7 @@ jobs:
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
       
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_STG}}
+      NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_STG}}
 
       LOG_LEVEL: ${{secrets.LOG_LEVEL_STG}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
