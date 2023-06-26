@@ -58,6 +58,7 @@ jobs:
       DATABASE_NAME: ${{secrets.DATABASE_NAME_SBX}}
       
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_SBX}}
+      NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_SBX}}
       
       LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
