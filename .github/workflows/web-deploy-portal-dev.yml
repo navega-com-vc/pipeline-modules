@@ -53,7 +53,7 @@ jobs:
       - name: Build
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn build
+          yarn dev
 
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
