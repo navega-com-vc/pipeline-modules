@@ -1,4 +1,4 @@
-name: web-deploy-aws-sbx
+name: web-deploy-portal-sbx
 
 on:
   workflow_call:
@@ -16,9 +16,9 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    
+
     env:
-      PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_SBX }}/assets/mf.manifest.json      
+      PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_SBX }}/assets/mf.manifest.json
       PORTAL_API_URL: ${{ secrets.NAVEGA_PORTAL_API_URL_SBX }}
       DATADOG_APPLICATION_ID: ${{ secrets.DD_NAVEGA_PORTAL_APPLICATION_ID_SBX }}
       DATADOG_CLIENT_TOKEN: ${{ secrets.DD_NAVEGA_PORTAL_CLIENT_TOKEN_SBX }}
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -42,12 +42,12 @@ jobs:
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
-        
+
       - name: Install & Build Commons
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           cd ../libs/navega-portal-common && yarn install && yarn build
-          
+
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
@@ -65,7 +65,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SBX }}
           aws-region: ${{ secrets.AWS_REGION_SBX }}
 
-      - name: Development Deploy
+      - name: Sandbox Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete

@@ -1,4 +1,4 @@
-name: api-deploy-stg
+name: api-deploy-portal-stg
 
 on:
   workflow_call:
@@ -8,7 +8,7 @@ on:
       RUNS_ON:
         type: string
         default: ubuntu-latest
-        
+
     secrets:
       ARTIFACTORY_NPM_REGISTRY:
         required: true
@@ -16,14 +16,14 @@ on:
         required: true
       ARTIFACTORY_EMAIL:
         required: true
-      
+
       AWS_ACCESS_KEY_ID_STG:
         required: true
       AWS_SECRET_ACCESS_KEY_STG:
         required: true
       AWS_REGION_STG:
         required: true
-        
+
       DATABASE_HOST_DEV:
         required: false
       DATABASE_USERNAME_DEV:
@@ -56,7 +56,7 @@ jobs:
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
-      
+
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_STG}}
       NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_STG}}
 
@@ -69,12 +69,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          
+
       - name: Setup Jfrog
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
@@ -82,17 +82,17 @@ jobs:
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           npm config set -- 'always-auth' "true"
-          
+
       - name: Install & Build Libs
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           sh ../build-libs.sh
-          
+
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn install
-      
+
       - name: Staging Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |

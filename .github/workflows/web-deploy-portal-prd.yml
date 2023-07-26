@@ -1,4 +1,4 @@
-name: web-deploy-portal-dev
+name: web-deploy-portal-prd
 
 on:
   workflow_call:
@@ -10,16 +10,19 @@ on:
         required: true
 
 jobs:
-  deploy-dev:
-    if: github.ref == 'refs/heads/dev'
+  deploy-prd:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
     env:
-      PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_DEV }}/assets/mf.manifest.json
-      PORTAL_API_URL: ${{ secrets.NAVEGA_PORTAL_API_URL_DEV }}
+      PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_PRD }}/assets/mf.manifest.json
+      PORTAL_API_URL: ${{ secrets.NAVEGA_PORTAL_API_URL_PRD }}
+      DATADOG_APPLICATION_ID: ${{ secrets.DD_NAVEGA_PORTAL_APPLICATION_ID_PRD }}
+      DATADOG_CLIENT_TOKEN: ${{ secrets.DD_NAVEGA_PORTAL_CLIENT_TOKEN_PRD }}
+      DATADOG_SAMPLE_RATE: ${{ secrets.DD_NAVEGA_PORTAL_SAMPLE_RATE_PRD }}
 
     steps:
       - name: Checkout
@@ -53,17 +56,17 @@ jobs:
       - name: Build
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn dev
+          yarn build
 
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-          aws-region: ${{ secrets.AWS_REGION_DEV }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PRD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PRD }}
+          aws-region: ${{ secrets.AWS_REGION_PRD }}
 
-      - name: Development Deploy
+      - name: Production Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete
-          aws cloudfront create-invalidation --distribution-id=ERYU3DLSLHXC3 --paths "/*"
+          aws cloudfront create-invalidation --distribution-id=E311F38ENNBF88 --paths "/*"

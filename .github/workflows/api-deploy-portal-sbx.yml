@@ -1,4 +1,4 @@
-name: api-deploy-sbx
+name: api-deploy-portal-sbx
 
 on:
   workflow_call:
@@ -16,14 +16,14 @@ on:
         required: true
       ARTIFACTORY_EMAIL:
         required: true
-        
+
       AWS_ACCESS_KEY_ID_SBX:
         required: true
       AWS_SECRET_ACCESS_KEY_SBX:
         required: true
       AWS_REGION_SBX:
         required: true
-      
+
       DATABASE_HOST_SBX:
         required: false
       DATABASE_USERNAME_SBX:
@@ -32,10 +32,10 @@ on:
         required: false
       DATABASE_NAME_SBX:
         required: false
-      
+
       NAVEGA_API_URL_SBX:
         required: false
-        
+
       ENV_SBX:
         required: true
       LOG_LEVEL_SBX:
@@ -56,25 +56,25 @@ jobs:
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_SBX}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_SBX}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME_SBX}}
-      
+
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_SBX}}
       NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_SBX}}
-      
+
       LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       ENV: ${{secrets.ENV_SBX}}
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          
+
       - name: Setup Jfrog
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
@@ -82,17 +82,17 @@ jobs:
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           npm config set -- 'always-auth' "true"
-          
+
       - name: Install & Build Libs
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           sh ../build-libs.sh
-          
+
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn install
-      
+
       - name: Sandbox Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
