@@ -100,4 +100,4 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_STG}}
           export AWS_REGION=${{secrets.AWS_REGION_STG}}
           npm i -g serverless
-          sls deploy --stage ${{secrets.ENV_STG}}
+          sls deploy --stage ${{secrets.ENV_STG}} --region $AWS_REGION
