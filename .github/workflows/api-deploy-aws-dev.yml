@@ -24,6 +24,13 @@ on:
       AWS_REGION_DEV:
         required: true
 
+      SUBNET_APP_A_DEV:
+        required: true
+      SUBNET_APP_B_DEV:
+        required: true
+      SECURITY_GROUP_API_DEV:
+        required: true
+
       DATABASE_HOST_DEV:
         required: false
       DATABASE_USERNAME_DEV:
@@ -76,6 +83,10 @@ jobs:
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+
+      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_DEV}}
+      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_DEV}}
+      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_DEV}}
 
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
 

@@ -24,6 +24,13 @@ on:
       AWS_REGION_STG:
         required: true
 
+      SUBNET_APP_A_STG:
+        required: true
+      SUBNET_APP_B_STG:
+        required: true
+      SECURITY_GROUP_API_STG:
+        required: true
+
       DD_API_KEY:
         required: true
 
@@ -51,10 +58,6 @@ on:
         required: false
       KEYCLOAK_PASSWORD_ADMIN_DEV:
         required: false
-      KEYCLOAK_WORKFLOW_USERNAME_STG:
-        required: false
-      KEYCLOAK_WORKFLOW_PASSWORD_STG:
-        required: false
 
       AWS_DYNAMODB_REGION_STG:
         required: false
@@ -81,8 +84,9 @@ jobs:
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
 
-      KEYCLOAK_WORKFLOW_USERNAME: ${{secrets.KEYCLOAK_WORKFLOW_USERNAME_STG}}
-      KEYCLOAK_WORKFLOW_PASSWORD: ${{secrets.KEYCLOAK_WORKFLOW_PASSWORD_STG}}
+      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_STG}}
+      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_STG}}
+      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_STG}}
 
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_STG}}
 

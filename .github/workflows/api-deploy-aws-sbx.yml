@@ -24,6 +24,13 @@ on:
       AWS_REGION_SBX:
         required: true
 
+      SUBNET_APP_A_SBX:
+        required: true
+      SUBNET_APP_B_SBX:
+        required: true
+      SECURITY_GROUP_API_SBX:
+        required: true
+
       ENV_SBX:
         required: true
       LOG_LEVEL_SBX:
@@ -48,10 +55,6 @@ on:
       KEYCLOAK_USERNAME_ADMIN_SBX:
         required: false
       KEYCLOAK_PASSWORD_ADMIN_SBX:
-        required: false
-      KEYCLOAK_WORKFLOW_USERNAME_SBX:
-        required: false
-      KEYCLOAK_WORKFLOW_PASSWORD_SBX:
         required: false
 
       AWS_DYNAMODB_REGION_SBX:
@@ -78,8 +81,10 @@ jobs:
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_SBX}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_SBX}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_SBX}}
-      KEYCLOAK_WORKFLOW_USERNAME: ${{secrets.KEYCLOAK_WORKFLOW_USERNAME_SBX}}
-      KEYCLOAK_WORKFLOW_PASSWORD: ${{secrets.KEYCLOAK_WORKFLOW_PASSWORD_SBX}}
+
+      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_SBX}}
+      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_SBX}}
+      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_SBX}}
 
       LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
