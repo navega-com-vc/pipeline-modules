@@ -24,6 +24,13 @@ on:
       AWS_REGION_PRD:
         required: true
 
+      SUBNET_APP_A_PRD:
+        required: true
+      SUBNET_APP_B_PRD:
+        required: true
+      SECURITY_GROUP_API_PRD:
+        required: true
+
       ENV_PRD:
         required: true
       LOG_LEVEL_PRD:
@@ -74,6 +81,10 @@ jobs:
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_PRD}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_PRD}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_PRD}}
+
+      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_PRD}}
+      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_PRD}}
+      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_PRD}}
 
       LOG_LEVEL: ${{secrets.LOG_LEVEL_PRD}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
