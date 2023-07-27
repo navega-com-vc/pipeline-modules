@@ -123,6 +123,7 @@ jobs:
       - name: Sandbox Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          export VERSION=$(node -p "require('./package.json').version")
           export AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_SBX}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
           export AWS_REGION=${{secrets.AWS_REGION_SBX}}
