@@ -25,11 +25,11 @@ on:
         required: true
 
       SUBNET_APP_A_SBX:
-        required: true
+        required: false
       SUBNET_APP_B_SBX:
-        required: true
+        required: false
       SECURITY_GROUP_API_SBX:
-        required: true
+        required: false
 
       ENV_SBX:
         required: true

@@ -25,11 +25,11 @@ on:
         required: true
 
       SUBNET_APP_A_DEV:
-        required: true
+        required: false
       SUBNET_APP_B_DEV:
-        required: true
+        required: false
       SECURITY_GROUP_API_DEV:
-        required: true
+        required: false
 
       DATABASE_HOST_DEV:
         required: false

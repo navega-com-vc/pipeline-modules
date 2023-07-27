@@ -25,11 +25,11 @@ on:
         required: true
 
       SUBNET_APP_A_STG:
-        required: true
+        required: false
       SUBNET_APP_B_STG:
-        required: true
+        required: false
       SECURITY_GROUP_API_STG:
-        required: true
+        required: false
 
       DD_API_KEY:
         required: true
