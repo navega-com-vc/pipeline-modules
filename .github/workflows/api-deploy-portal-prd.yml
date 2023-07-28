@@ -33,6 +33,13 @@ on:
       DATABASE_NAME_PRD:
         required: false
 
+      SUBNET_APP_A_PRD:
+        required: true
+      SUBNET_APP_B_PRD:
+        required: true
+      SECURITY_GROUP_API_PRD:
+        required: true
+
       NAVEGA_API_URL_PRD:
         required: false
       NAVEGA_PORTAL_API_URL_PRD:
@@ -58,6 +65,10 @@ jobs:
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_PRD}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_PRD}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME_PRD}}
+
+      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_PRD}}
+      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_PRD}}
+      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_PRD}}
 
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_PRD}}
       NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_PRD}}
@@ -98,6 +109,7 @@ jobs:
       - name: Production Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          export VERSION=$(node -p "require('./package.json').version")
           export AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_PRD}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_PRD}}
           export AWS_REGION=${{secrets.AWS_REGION_PRD}}
