@@ -18,7 +18,7 @@ jobs:
       cancel-in-progress: true
 
     env:
-      PORTAL_SHELL_MANIFEST: ${{ secrets.PORTAL_BASE_URL_DEV }}/assets/mf.manifest.json
+      PORTAL_SHELL_MANIFEST: /assets/mf.manifest.json
       PORTAL_API_URL: ${{ secrets.NAVEGA_PORTAL_API_URL_DEV }}
 
     steps:
