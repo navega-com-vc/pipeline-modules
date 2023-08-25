@@ -1,4 +1,4 @@
-name: quality-workflow
+name: quality-workflow-veracode
 
 on:
   workflow_call:
