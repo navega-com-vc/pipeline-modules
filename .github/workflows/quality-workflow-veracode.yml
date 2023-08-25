@@ -102,7 +102,7 @@ jobs:
         with:
           name: pacoteVeracode
           path: veracode.zip
-  
+
   Veracode_SCA:
     runs-on: ubuntu-latest
     steps:
@@ -111,6 +111,11 @@ jobs:
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SCA }} # Lembrar de criar as credenciais no Secrets
         run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          yarn install
           curl -sSL 'https://download.sourceclear.com/ci.sh' | bash -s – scan --update-advisor --pull-request --allow-dirty
 
   Veracode_UploadAndScan:
