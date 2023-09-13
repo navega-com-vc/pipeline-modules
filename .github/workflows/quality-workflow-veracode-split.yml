@@ -55,6 +55,12 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
@@ -64,26 +70,10 @@ jobs:
           echo "always-auth=true" >> ~/.npmrc
           yarn install
 
-      - name: Zip node_modules
-        uses: thedoctor0/zip-release@master
-        with:
-          filename: 'node_modules.zip'
-          path: .
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ github.head_ref }}
-          path: node_modules.zip
-
   quality:
     runs-on: ubuntu-latest
     needs: install
     steps:
-      - name: Download node_modules
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ github.head_ref }}
-
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -127,11 +117,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: install
     steps:
-      - name: Download node_modules
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ github.head_ref }}
-
       - uses: actions/checkout@v2
       - name: Veracode SCA
         env:
