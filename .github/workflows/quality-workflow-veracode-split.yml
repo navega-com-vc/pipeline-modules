@@ -55,12 +55,6 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'yarn'
-
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
@@ -69,6 +63,12 @@ jobs:
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
 
   quality:
     runs-on: ubuntu-latest
