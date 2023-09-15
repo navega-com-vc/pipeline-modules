@@ -67,7 +67,9 @@ jobs:
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
-          path: .
+          path: |
+            ./node_modules
+            ./yarn.lock
           key: ${{ github.head_ref }}
 
   quality:
@@ -77,7 +79,9 @@ jobs:
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
-          path: .
+          path: |
+            ./node_modules
+            ./yarn.lock
           key: ${{ github.head_ref }}
 
       - name: Lint
