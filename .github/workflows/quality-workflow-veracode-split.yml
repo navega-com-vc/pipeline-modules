@@ -56,11 +56,11 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Install
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: 'yarn'
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
