@@ -60,6 +60,8 @@ jobs:
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_SBX}}
       NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_SBX}}
 
+      SIMULATION_API_URL: ${secrets.SIMULATION_API_URL_DEV}
+
       LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       ENV: ${{secrets.ENV_SBX}}
