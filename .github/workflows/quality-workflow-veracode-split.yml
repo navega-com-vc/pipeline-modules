@@ -68,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.head_ref }}
-          path: ./yarn.lock
+          path: .
 
   quality:
     runs-on: ubuntu-latest
