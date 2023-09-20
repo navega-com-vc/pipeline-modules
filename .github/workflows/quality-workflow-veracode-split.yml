@@ -24,6 +24,22 @@ on:
       WORKING_DIRECTORY:
         type: string
 
+env:
+  DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+  DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+  DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+  DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+
+  KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+  KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+  KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+  KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
+  KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
+  KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+
+  ENV: ${{ secrets.ENV_DEV }}
+  DD_ENV: ${{ secrets.ENV_DEV }}
+
 jobs:
   install:
     if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
@@ -32,22 +48,6 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
-
-    env:
-      DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
-      DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
-      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
-      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
-
-      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
-      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
-      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
-      KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
-      KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
-      KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
-
-      ENV: ${{ secrets.ENV_DEV }}
-      DD_ENV: ${{ secrets.ENV_DEV }}
 
     steps:
       - name: Checkout
@@ -66,12 +66,7 @@ jobs:
           ls -la
 
       - name: Compress project
-        run: tar -cvf ${{ github.head_ref }}.tar.gz .
-
-#      - name: Zip project
-#        uses: montudor/action-zip@v1
-#        with:
-#          args: zip -qq -r ${{ github.head_ref }}.zip .
+        run: tar -czvf ${{ github.head_ref }}.tar.gz .
 
       - name: Upload zip project
         uses: actions/upload-artifact@v3
@@ -89,12 +84,7 @@ jobs:
           name: ${{ github.head_ref }}
 
       - name: Extract project
-        run: tar -xvf ${{ github.head_ref }}.tar.gz .
-
-#      - name: Unzip project
-#        uses: montudor/action-zip@v1
-#        with:
-#          args: unzip -qq ${{ github.head_ref }}.zip -d .
+        run: tar -xzvf ${{ github.head_ref }}.tar.gz .
 
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
