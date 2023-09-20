@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.head_ref }}
-          path: ${{ github.head_ref }}.zip
+          path: ${{ github.head_ref }}.tar.gz
 
   quality:
     runs-on: ubuntu-latest
