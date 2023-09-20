@@ -66,7 +66,9 @@ jobs:
           ls -la
 
       - name: Compress project
-        run: tar -czf ${{ github.head_ref }}.tar.gz .
+        run: |
+          touch ${{ github.head_ref }}.tar.gz
+          tar --exclude=${{ github.head_ref }}.tar.gz -czf ${{ github.head_ref }}.tar.gz .
 
       - name: Upload zip project
         uses: actions/upload-artifact@v3
@@ -90,7 +92,6 @@ jobs:
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          ls -la
           yarn lint
 
       - name: Audit
