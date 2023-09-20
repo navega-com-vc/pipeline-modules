@@ -63,9 +63,7 @@ jobs:
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
-
-      - name: LS
-        run: ls -la
+          ls -la
 
       - name: Zip project
         uses: montudor/action-zip@v1
@@ -92,13 +90,11 @@ jobs:
         with:
           args: unzip -qq ${{ github.head_ref }}.zip -d .
 
-      - name: LS
-        run: ls -la
-
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          ls -la
           yarn lint
 
       - name: Audit
