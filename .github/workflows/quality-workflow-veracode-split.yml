@@ -56,7 +56,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Install
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
@@ -65,17 +65,13 @@ jobs:
           yarn install
           ls -la
 
-      - name: Lint
-        if: ${{ !inputs.SKIP_LINT }}
-        #        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          ls -la
-          yarn lint
+      - name: Compress project
+        run: tar -cvf ${{ github.head_ref }}.tar.gz .
 
-      - name: Zip project
-        uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r ${{ github.head_ref }}.zip .
+#      - name: Zip project
+#        uses: montudor/action-zip@v1
+#        with:
+#          args: zip -qq -r ${{ github.head_ref }}.zip .
 
       - name: Upload zip project
         uses: actions/upload-artifact@v3
@@ -92,33 +88,36 @@ jobs:
         with:
           name: ${{ github.head_ref }}
 
-      - name: Unzip project
-        uses: montudor/action-zip@v1
-        with:
-          args: unzip -qq ${{ github.head_ref }}.zip -d .
+      - name: Extract project
+        run: tar -xvf ${{ github.head_ref }}.tar.gz .
+
+#      - name: Unzip project
+#        uses: montudor/action-zip@v1
+#        with:
+#          args: unzip -qq ${{ github.head_ref }}.zip -d .
 
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           ls -la
           yarn lint
 
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn audit --groups dependencies
 
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn test
 
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
