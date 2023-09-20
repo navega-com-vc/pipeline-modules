@@ -76,7 +76,58 @@ jobs:
           name: ${{ github.head_ref }}
           path: ${{ github.head_ref }}.tar.gz
 
-  quality:
+#  quality:
+#    runs-on: ubuntu-latest
+#    needs: install
+#    steps:
+#      - name: Download zip project
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: ${{ github.head_ref }}
+#
+#      - name: Extract project
+#        run: tar -xzf ${{ github.head_ref }}.tar.gz .
+#
+#      - name: Lint
+#        if: ${{ !inputs.SKIP_LINT }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        run: |
+#          yarn lint
+#
+#      - name: Audit
+#        if: ${{ !inputs.SKIP_AUDIT }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        run: |
+#          yarn audit --groups dependencies
+#
+#      - name: Tests
+#        if: ${{ !inputs.SKIP_TESTS }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        run: |
+#          yarn test
+#
+#      - name: Sonarqube
+#        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        run: |
+#          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+
+#  veracodePackage:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Package files
+#        uses: thedoctor0/zip-release@master
+#        with:
+#          filename: 'veracode.zip'
+#          path: .
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: veracodePackage
+#          path: veracode.zip
+
+  SCA:
     runs-on: ubuntu-latest
     needs: install
     steps:
@@ -88,72 +139,36 @@ jobs:
       - name: Extract project
         run: tar -xzf ${{ github.head_ref }}.tar.gz .
 
-      - name: Lint
-        if: ${{ !inputs.SKIP_LINT }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          yarn lint
-
-      - name: Audit
-        if: ${{ !inputs.SKIP_AUDIT }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          yarn audit --groups dependencies
-
-      - name: Tests
-        if: ${{ !inputs.SKIP_TESTS }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          yarn test
-
-      - name: Sonarqube
-        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
-
-  veracodePackage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Package files
-        uses: thedoctor0/zip-release@master
-        with:
-          filename: 'veracode.zip'
-          path: .
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: veracodePackage
-          path: veracode.zip
-
-  veracodeSCA:
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - uses: actions/checkout@v3
       - name: Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.SCA }}
         run: |
           curl -sSL 'https://download.sourceclear.com/ci.sh' | bash -s – scan --update-advisor --pull-request --allow-dirty
 
-  veracodeUploadAndScan:
+  SastAndUpload:
     runs-on: ubuntu-latest
-    if: ${{ contains(fromJson('["dev", "stg", "sbx"]'), github.head_ref) }}
-    needs: veracodePackage
+    if: ${{ contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
+    needs: install
     steps:
-      - name: Download artifact
+      - name: Download zip project
         uses: actions/download-artifact@v3
         with:
-          name: veracodePackage
-      - name: Upload and Scan Veracode Sandbox
-        uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
+          name: ${{ github.head_ref }}
+
+#      - name: Extract project
+#        run: tar -xzf ${{ github.head_ref }}.tar.gz .
+
+#      - name: Download artifact
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: veracodePackage
+      - name: Upload and Scan Non Production Branch
         if: ${{ github.ref != 'refs/heads/main' }}
+        uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
         env:
           VeracodeID: ${{ secrets.VeracodeID }} # Lembrar de criar as credenciais no Secrets
           VeracodeKey: ${{ secrets.VeracodeKey }}
-          AppName: Github Actions - ${{ github.repository }}
+          AppName: ${{ github.repository }}
         with:
           vid: '$VeracodeID'
           vkey: '$VeracodeKey'
@@ -161,40 +176,42 @@ jobs:
           appname: '$AppName'
           createsandbox: true
           sandboxname: ${GITHUB_REF#refs/heads/}
-          filepath: 'veracode.zip'
+          filepath: ${{ github.head_ref }}.tar.gz
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
-      - name: Upload and Scan Veracode
-        uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
+
+      - name: Upload and Scan Production
         if: ${{ github.ref == 'refs/heads/main' }}
+        uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
         env:
           VeracodeID: ${{ secrets.VeracodeID }} # Lembrar de criar as credenciais no Secrets
           VeracodeKey: ${{ secrets.VeracodeKey }}
-          AppName: Github Actions - ${{ github.repository }}
+          AppName: ${{ github.repository }}
         with:
           vid: '$VeracodeID'
           vkey: '$VeracodeKey'
           criticality: 'VeryHigh'
           appname: '$AppName'
-          filepath: 'veracode.zip'
+          filepath: ${{ github.head_ref }}.tar.gz .
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
 
-  veracodePipelineScan:
+  SastInPipeline:
     runs-on: ubuntu-latest
-    needs: veracodePackage
+    needs: install
     steps:
-      - name: Download artifact
+      - name: Download zip project
         uses: actions/download-artifact@v3
         with:
-          name: veracodePackage
+          name: ${{ github.head_ref }}
+
       - name: Veracode Pipeline Scan
         # Integração com a aba security
         # continue-on-error: true
         env:
           VID: ${{ secrets.VeracodeID }}
           VKEY: ${{ secrets.VeracodeKey }}
-          path: './veracode.zip'
+          path: ${{ github.head_ref }}.tar.gz
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip pipeline-scan-LATEST.zip
