@@ -56,7 +56,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Install
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
@@ -92,26 +92,26 @@ jobs:
 
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           ls -la
           yarn lint
 
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn audit --groups dependencies
 
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn test
 
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
