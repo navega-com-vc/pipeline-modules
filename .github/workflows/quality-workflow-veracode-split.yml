@@ -65,6 +65,13 @@ jobs:
           yarn install
           ls -la
 
+      - name: Lint
+        if: ${{ !inputs.SKIP_LINT }}
+        #        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          ls -la
+          yarn lint
+
       - name: Zip project
         uses: montudor/action-zip@v1
         with:
