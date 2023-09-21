@@ -44,7 +44,7 @@ jobs:
   install:
     if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
     runs-on: ${{ inputs.RUNS_ON }}
-    container: f3capital/aquario:latest
+    container: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
@@ -55,6 +55,19 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      # Comprime os arquivos do repositório para análise de segurança
+      - name: Compress files for security analysis
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: securityAnalysis.zip
+          path: .
+
+      - name: Upload security analysis files
+        uses: actions/upload-artifact@v3
+        with:
+          name: securityAnalysis
+          path: securityAnalysis.zip
+
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
@@ -63,71 +76,20 @@ jobs:
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
-          ls -la
 
-      - name: Compress project
+      # Comprime o projeto executável
+      - name: Compress runnable project
         run: |
           touch ${{ github.head_ref }}.tar.gz
           tar --exclude=${{ github.head_ref }}.tar.gz -czf ${{ github.head_ref }}.tar.gz .
 
-      - name: Upload zip project
+      - name: Upload compressed project
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.head_ref }}
           path: ${{ github.head_ref }}.tar.gz
 
-#  quality:
-#    runs-on: ubuntu-latest
-#    needs: install
-#    steps:
-#      - name: Download zip project
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: ${{ github.head_ref }}
-#
-#      - name: Extract project
-#        run: tar -xzf ${{ github.head_ref }}.tar.gz .
-#
-#      - name: Lint
-#        if: ${{ !inputs.SKIP_LINT }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-#        run: |
-#          yarn lint
-#
-#      - name: Audit
-#        if: ${{ !inputs.SKIP_AUDIT }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-#        run: |
-#          yarn audit --groups dependencies
-#
-#      - name: Tests
-#        if: ${{ !inputs.SKIP_TESTS }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-#        run: |
-#          yarn test
-#
-#      - name: Sonarqube
-#        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
-#        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-#        run: |
-#          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
-
-#  veracodePackage:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Package files
-#        uses: thedoctor0/zip-release@master
-#        with:
-#          filename: 'veracode.zip'
-#          path: .
-#      - name: Upload artifact
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: veracodePackage
-#          path: veracode.zip
-
-  SCA:
+  quality:
     runs-on: ubuntu-latest
     needs: install
     steps:
@@ -139,35 +101,61 @@ jobs:
       - name: Extract project
         run: tar -xzf ${{ github.head_ref }}.tar.gz .
 
-      - name: Veracode SCA
+      - name: Lint
+        if: ${{ !inputs.SKIP_LINT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn lint
+
+      - name: Audit
+        if: ${{ !inputs.SKIP_AUDIT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn audit --groups dependencies
+
+      - name: Tests
+        if: ${{ !inputs.SKIP_TESTS }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn test
+
+      - name: Sonarqube
+        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+
+  SCA:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Run SCA analysis
         env:
-          SRCCLR_API_TOKEN: ${{ secrets.SCA }}
+          SRCCLR_API_TOKEN: ${{ secrets.SCA }} # TODO: Alterar o nome da env VC_SCA_TOKEN
         run: |
           curl -sSL 'https://download.sourceclear.com/ci.sh' | bash -s – scan --update-advisor --pull-request --allow-dirty
 
-  SastAndUpload:
+  UploadAndRunSAST:
     runs-on: ubuntu-latest
     if: ${{ contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
     needs: install
     steps:
-      - name: Download zip project
+      - name: Download security analysis package
         uses: actions/download-artifact@v3
         with:
-          name: ${{ github.head_ref }}
+          name: securityAnalysis
 
-#      - name: Extract project
-#        run: tar -xzf ${{ github.head_ref }}.tar.gz .
-
-#      - name: Download artifact
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: veracodePackage
-      - name: Upload and Scan Non Production Branch
+      - name: Upload and Run SAST in Sandbox
         if: ${{ github.ref != 'refs/heads/main' }}
-        uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
+        uses: veracode/veracode-uploadandscan-action@master
         env:
-          VeracodeID: ${{ secrets.VeracodeID }} # Lembrar de criar as credenciais no Secrets
-          VeracodeKey: ${{ secrets.VeracodeKey }}
+          VeracodeID: ${{ secrets.VeracodeID }} # TODO: VC_ID
+          VeracodeKey: ${{ secrets.VeracodeKey }} # TODO: VC_KEY
           AppName: ${{ github.repository }}
         with:
           vid: '$VeracodeID'
@@ -176,42 +164,42 @@ jobs:
           appname: '$AppName'
           createsandbox: true
           sandboxname: ${GITHUB_REF#refs/heads/}
-          filepath: ${{ github.head_ref }}.tar.gz
+          filepath: securityAnalysis.zip
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
 
-      - name: Upload and Scan Production
+      - name: Upload and Run SAST in Production
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
         env:
-          VeracodeID: ${{ secrets.VeracodeID }} # Lembrar de criar as credenciais no Secrets
-          VeracodeKey: ${{ secrets.VeracodeKey }}
+          VeracodeID: ${{ secrets.VeracodeID }} # TODO: VC_ID
+          VeracodeKey: ${{ secrets.VeracodeKey }} # TODO: VC_KEY
           AppName: ${{ github.repository }}
         with:
           vid: '$VeracodeID'
           vkey: '$VeracodeKey'
           criticality: 'VeryHigh'
           appname: '$AppName'
-          filepath: ${{ github.head_ref }}.tar.gz .
+          filepath: securityAnalysis.zip
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
 
-  SastInPipeline:
+  runSAST:
     runs-on: ubuntu-latest
     needs: install
     steps:
-      - name: Download zip project
+      - name: Download security analysis package
         uses: actions/download-artifact@v3
         with:
-          name: ${{ github.head_ref }}
+          name: securityAnalysis
 
       - name: Veracode Pipeline Scan
         # Integração com a aba security
         # continue-on-error: true
         env:
-          VID: ${{ secrets.VeracodeID }}
-          VKEY: ${{ secrets.VeracodeKey }}
-          path: ${{ github.head_ref }}.tar.gz
+          VeracodeID: ${{ secrets.VeracodeID }} # TODO: VC_ID
+          VeracodeKey: ${{ secrets.VeracodeKey }} # TODO: VC_KEY
+          path: './securityAnalysis.zip'
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip pipeline-scan-LATEST.zip
