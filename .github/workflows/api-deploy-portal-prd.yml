@@ -73,6 +73,8 @@ jobs:
       NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_PRD}}
       NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_PRD}}
 
+      SIMULATION_API_URL: ${{secrets.SIMULATION_API_URL_PRD}}
+
       LOG_LEVEL: ${{secrets.LOG_LEVEL_PRD}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       ENV: ${{secrets.ENV_PRD}}
