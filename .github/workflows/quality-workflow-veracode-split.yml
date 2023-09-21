@@ -212,7 +212,7 @@ jobs:
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip pipeline-scan-LATEST.zip
-          java -jar pipeline-scan.jar -vid $VID -vkey $VKEY -f $path --issue_details true
+          java -jar pipeline-scan.jar -vid $VeracodeID -vkey $VeracodeKey -f $path --issue_details true
       # Integração com a aba Security do Github - Avaliar se usaremos isso no futuro
       # - name: Converte para o formato SARIF
       #   id: convert
