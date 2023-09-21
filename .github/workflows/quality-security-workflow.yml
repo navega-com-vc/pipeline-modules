@@ -78,14 +78,14 @@ jobs:
       # Comprime o projeto executável
       - name: Compress runnable project
         run: |
-          touch ${{ github.head_ref }}.tar.gz
-          tar --exclude=${{ github.head_ref }}.tar.gz -czf ${{ github.head_ref }}.tar.gz .
+          touch ${{ github.ref_name }}.tar.gz
+          tar --exclude=${{ github.ref_name }}.tar.gz -czf ${{ github.ref_name }}.tar.gz .
 
       - name: Upload compressed project
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.head_ref }}
-          path: ${{ github.head_ref }}.tar.gz
+          name: ${{ github.ref_name }}
+          path: ${{ github.ref_name }}.tar.gz
 
   quality:
     runs-on: ${{ inputs.RUNS_ON }}
@@ -94,10 +94,10 @@ jobs:
       - name: Download compressed project
         uses: actions/download-artifact@v3
         with:
-          name: ${{ github.head_ref }}
+          name: ${{ github.ref_name }}
 
       - name: Extract project
-        run: tar -xzf ${{ github.head_ref }}.tar.gz .
+        run: tar -xzf ${{ github.ref_name }}.tar.gz .
 
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
@@ -130,10 +130,10 @@ jobs:
       - name: Download compressed project
         uses: actions/download-artifact@v3
         with:
-          name: ${{ github.head_ref }}
+          name: ${{ github.ref_name }}
 
       - name: Extract project
-        run: tar -xzf ${{ github.head_ref }}.tar.gz .
+        run: tar -xzf ${{ github.ref_name }}.tar.gz .
 
       - name: Run SCA analysis
         env:
