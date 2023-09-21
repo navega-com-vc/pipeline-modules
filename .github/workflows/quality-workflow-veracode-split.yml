@@ -58,7 +58,7 @@ jobs:
       - name: Compress files for security analysis
         uses: thedoctor0/zip-release@master
         with:
-          filename: securityAnalysis.zip
+          filename: 'securityAnalysis.zip'
           path: .
 
       - name: Upload security analysis files
@@ -169,7 +169,7 @@ jobs:
           appname: '$AppName'
           createsandbox: true
           sandboxname: ${GITHUB_REF#refs/heads/}
-          filepath: securityAnalysis.zip
+          filepath: 'securityAnalysis.zip'
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
 
@@ -187,7 +187,7 @@ jobs:
           vkey: '$VeracodeKey'
           criticality: 'VeryHigh'
           appname: '$AppName'
-          filepath: securityAnalysis.zip
+          filepath: 'securityAnalysis.zip'
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
 
