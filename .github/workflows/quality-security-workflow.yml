@@ -162,7 +162,12 @@ jobs:
 
   runAndUploadSAST:
     runs-on: ubuntu-latest
-    if: ${{ contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
+    if: contains('
+      refs/heads/dev
+      refs/heads/stg
+      refs/heads/sbx
+      refs/heads/main
+      ', github.ref)
     needs: install
     steps:
       - name: Download security analysis package
