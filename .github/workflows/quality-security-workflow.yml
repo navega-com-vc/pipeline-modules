@@ -38,7 +38,6 @@ env:
   KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
 
   ENV: ${{ secrets.ENV_DEV }}
-  DD_ENV: ${{ secrets.ENV_DEV }}
 
 jobs:
   install:
