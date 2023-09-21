@@ -138,8 +138,7 @@ jobs:
 
       - name: Run SCA analysis
         env:
-          # TODO: VC_SCA_TOKEN
-          SRCCLR_API_TOKEN: ${{ secrets.SCA }}
+          SRCCLR_API_TOKEN: ${{ secrets.VERACODE_API_TOKEN }}
         run: |
           curl -sSL 'https://download.sourceclear.com/ci.sh' | bash -s – scan --update-advisor --pull-request --allow-dirty
 
@@ -157,10 +156,8 @@ jobs:
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: veracode/veracode-uploadandscan-action@master
         env:
-          # TODO: VC_ID
-          VeracodeID: ${{ secrets.VeracodeID }}
-          # TODO: VC_KEY
-          VeracodeKey: ${{ secrets.VeracodeKey }}
+          VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+          VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
           AppName: ${{ github.repository }}
         with:
           vid: '$VeracodeID'
@@ -177,10 +174,8 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
         env:
-          # TODO: VC_ID
-          VeracodeID: ${{ secrets.VeracodeID }}
-          # TODO: VC_KEY
-          VeracodeKey: ${{ secrets.VeracodeKey }}
+          VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+          VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
           AppName: ${{ github.repository }}
         with:
           vid: '$VeracodeID'
@@ -204,10 +199,8 @@ jobs:
         # Integração com a aba security
         # continue-on-error: true
         env:
-          # TODO: VC_ID
-          VeracodeID: ${{ secrets.VeracodeID }}
-          # TODO: VC_KEY
-          VeracodeKey: ${{ secrets.VeracodeKey }}
+          VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+          VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
           path: './securityAnalysis.zip'
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
