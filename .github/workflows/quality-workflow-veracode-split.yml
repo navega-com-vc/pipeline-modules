@@ -44,7 +44,6 @@ jobs:
   install:
     if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
     runs-on: ${{ inputs.RUNS_ON }}
-    container: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
@@ -90,7 +89,7 @@ jobs:
           path: ${{ github.head_ref }}.tar.gz
 
   quality:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.RUNS_ON }}
     needs: install
     steps:
       - name: Download zip project
@@ -125,7 +124,7 @@ jobs:
         run: |
           yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
-  SCA:
+  runSCA:
     runs-on: ubuntu-latest
     needs: install
     steps:
@@ -140,7 +139,7 @@ jobs:
         run: |
           curl -sSL 'https://download.sourceclear.com/ci.sh' | bash -s – scan --update-advisor --pull-request --allow-dirty
 
-  UploadAndRunSAST:
+  runAndUploadSAST:
     runs-on: ubuntu-latest
     if: ${{ contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
     needs: install
