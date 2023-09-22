@@ -62,6 +62,10 @@ jobs:
 
       SIMULATION_API_URL: ${{secrets.SIMULATION_API_URL_DEV}}
 
+      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_STG}}
+      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_STG}}
+      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_STG}}
+
       LOG_LEVEL: ${{secrets.LOG_LEVEL_STG}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       ENV: ${{secrets.ENV_STG}}
