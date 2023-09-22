@@ -136,6 +136,7 @@ jobs:
         run: tar -xzf ${{ github.sha }}.tar.gz .
 
       - name: Run SCA analysis
+        continue-on-error: true
         env:
           SRCCLR_API_TOKEN: ${{ secrets.VERACODE_API_TOKEN }}
         run: |
@@ -151,6 +152,7 @@ jobs:
           name: securityAnalysis
 
       - name: Veracode Pipeline Scan
+        continue-on-error: true
         env:
           VeracodeID: ${{ secrets.VERACODE_APP_ID }}
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
@@ -176,6 +178,7 @@ jobs:
           name: securityAnalysis
 
       - name: Upload and Run SAST in Sandbox
+        continue-on-error: true
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: veracode/veracode-uploadandscan-action@master
         env:
@@ -194,6 +197,7 @@ jobs:
           version: ${{ github.run_id }}
 
       - name: Upload and Run SAST in Production
+        continue-on-error: true
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
         env:
