@@ -1,4 +1,4 @@
-name: quality-workflow-veracode-split
+name: quality-security-portal-web-workflow
 
 on:
   workflow_call:
