@@ -184,7 +184,7 @@ jobs:
         env:
           VeracodeID: ${{ secrets.VERACODE_APP_ID }}
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
-          AppName: ${{ inputs.WORKING_DIRECTORY }} || ${{ github.repository }}
+          AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
         with:
           vid: '$VeracodeID'
           vkey: '$VeracodeKey'
@@ -203,7 +203,7 @@ jobs:
         env:
           VeracodeID: ${{ secrets.VERACODE_APP_ID }}
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
-          AppName: ${{ inputs.WORKING_DIRECTORY }} || ${{ github.repository }}
+          AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
         with:
           vid: '$VeracodeID'
           vkey: '$VeracodeKey'
