@@ -184,7 +184,7 @@ jobs:
         env:
           VeracodeID: ${{ secrets.VERACODE_APP_ID }}
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
-          AppName: ${{ github.repository }}
+          AppName: ${{ inputs.WORKING_DIRECTORY }} || ${{ github.repository }}
         with:
           vid: '$VeracodeID'
           vkey: '$VeracodeKey'
@@ -199,11 +199,11 @@ jobs:
       - name: Upload and Run SAST in Production
         continue-on-error: true
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
+        uses: veracode/veracode-uploadandscan-action@master
         env:
           VeracodeID: ${{ secrets.VERACODE_APP_ID }}
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
-          AppName: ${{ github.repository }}
+          AppName: ${{ inputs.WORKING_DIRECTORY }} || ${{ github.repository }}
         with:
           vid: '$VeracodeID'
           vkey: '$VeracodeKey'
