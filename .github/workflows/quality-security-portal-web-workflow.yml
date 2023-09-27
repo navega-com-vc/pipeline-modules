@@ -66,13 +66,22 @@ jobs:
           name: securityAnalysis
           path: securityAnalysis.zip
 
-      - name: Install
+      - name: Setup Jfrog
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
+
+      - name: Install & Build Commons
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          cd ../libs/navega-portal-common && yarn install && yarn build
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
           yarn install
 
       # Comprime o projeto executável
@@ -110,11 +119,6 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn audit --groups dependencies
-
-      - name: Install & Build Commons
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          cd ../libs/navega-portal-common && yarn install && yarn build
 
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
