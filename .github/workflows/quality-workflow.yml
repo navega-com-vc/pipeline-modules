@@ -32,13 +32,13 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
-      
+
     env:
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
       DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
-     
+
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
@@ -48,7 +48,7 @@ jobs:
 
       ENV: ${{ secrets.ENV_DEV }}
       DD_ENV: ${{ secrets.ENV_DEV }}
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -64,29 +64,29 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
-          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
-          
+
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn lint
-          
+
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn audit --groups dependencies
-          
+
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn test
-          
+
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
