@@ -123,6 +123,7 @@ jobs:
           echo "always-auth=true" >> ~/.npmrc
           cp ~/.npmrc ./.npmrc
           yarn install
+          yarn build
 
       - name: Development Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}

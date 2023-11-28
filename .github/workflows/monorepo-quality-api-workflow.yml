@@ -81,6 +81,7 @@ jobs:
           echo "always-auth=true" >> ~/.npmrc
           cp ~/.npmrc ./.npmrc
           yarn install
+          yarn build
 
       # Comprime o projeto executável
       - name: Compress runnable project
