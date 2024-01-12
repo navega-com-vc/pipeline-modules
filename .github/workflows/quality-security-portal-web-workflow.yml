@@ -204,6 +204,8 @@ jobs:
           filepath: 'securityAnalysis.zip'
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
+          scanallnonfataltoplevelmodules: true
+          includenewmodules: true
 
       - name: Upload and Run SAST in Production
         continue-on-error: true
@@ -221,3 +223,5 @@ jobs:
           filepath: 'securityAnalysis.zip'
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
+          scanallnonfataltoplevelmodules: true
+          includenewmodules: true
