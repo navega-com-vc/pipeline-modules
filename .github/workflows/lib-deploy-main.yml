@@ -2,7 +2,9 @@ name: lib-deploy-main
 
 on:
   workflow_call:
-  
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
 jobs:
   deploy-lib:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/RMD-BETA'
@@ -14,7 +16,8 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Install
+      - name: Install      
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
@@ -24,6 +27,7 @@ jobs:
           yarn install
       
       - name: Build 
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn build
 
@@ -32,7 +36,9 @@ jobs:
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          
       - run: |
+          cd ${{ inputs.WORKING_DIRECTORY }}
           jf --v
           jf c add f3capital --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
           jf c show
