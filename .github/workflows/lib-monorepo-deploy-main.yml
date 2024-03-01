@@ -19,6 +19,7 @@ jobs:
       - name: Install      
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          ls -a
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
