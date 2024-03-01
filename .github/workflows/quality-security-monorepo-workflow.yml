@@ -1,0 +1,224 @@
+name: quality-security-monorepo-workflow
+
+on:
+  workflow_call:
+    inputs:
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
+      CANCEL_IN_PROGRESS:
+        type: boolean
+        default: true
+      SKIP_LINT:
+        type: boolean
+        default: false
+      SKIP_AUDIT:
+        type: boolean
+        default: false
+      SKIP_TESTS:
+        type: boolean
+        default: false
+      CONTINUE_ON_SONARQUBE_ERROR:
+        type: boolean
+        default: false
+      WORKING_DIRECTORY:
+        type: string
+
+env:
+  DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+  DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+  DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+  DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+
+  KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+  KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+  KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+  KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
+  KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
+  KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+
+  ENV: ${{ secrets.ENV_DEV }}
+
+jobs:
+  install:
+    if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
+    runs-on: ${{ inputs.RUNS_ON }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Comprime os arquivos do repositório para análise de segurança
+      - name: Compress files for security analysis
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: 'securityAnalysis.zip'
+          path: .
+
+      - name: Upload security analysis files
+        uses: actions/upload-artifact@v3
+        with:
+          name: securityAnalysis
+          path: securityAnalysis.zip
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          ls -a
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          yarn install
+
+      # Comprime o projeto executável
+      - name: Compress runnable project
+        run: |
+          touch ${{ github.sha }}.tar.gz
+          tar --exclude=${{ github.sha }}.tar.gz -czf ${{ github.sha }}.tar.gz .
+
+      - name: Upload compressed project
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.sha }}
+          path: ${{ github.sha }}.tar.gz
+
+  quality:
+    runs-on: ${{ inputs.RUNS_ON }}
+    needs: install
+    steps:
+      - name: Download compressed project
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.sha }}
+
+      - name: Extract project
+        run: tar -xzf ${{ github.sha }}.tar.gz .
+
+      - name: Lint
+        if: ${{ !inputs.SKIP_LINT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn lint
+
+      - name: Audit
+        if: ${{ !inputs.SKIP_AUDIT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn audit --groups dependencies
+
+      - name: Tests
+        if: ${{ !inputs.SKIP_TESTS }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn test
+
+      - name: Sonarqube
+        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+
+  runSCA:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Download compressed project
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.sha }}
+
+      - name: Extract project
+        run: tar -xzf ${{ github.sha }}.tar.gz .
+
+      - name: Run SCA analysis
+        continue-on-error: true
+        env:
+          SRCCLR_API_TOKEN: ${{ secrets.VERACODE_API_TOKEN }}
+        run: |
+          curl -sSL 'https://download.sourceclear.com/ci.sh' | bash -s – scan --update-advisor --pull-request --allow-dirty
+
+  runSAST:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Download security analysis package
+        uses: actions/download-artifact@v3
+        with:
+          name: securityAnalysis
+
+      - name: Veracode Pipeline Scan
+        continue-on-error: true
+        env:
+          VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+          VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
+          path: './securityAnalysis.zip'
+        run: |
+          curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+          unzip pipeline-scan-LATEST.zip
+          java -jar pipeline-scan.jar -vid $VeracodeID -vkey $VeracodeKey -f $path --issue_details true
+
+  runAndUploadSAST:
+    runs-on: ubuntu-latest
+    if: contains('
+      refs/heads/dev
+      refs/heads/stg
+      refs/heads/sbx
+      refs/heads/main
+      ', github.ref)
+    needs: install
+    steps:
+      - name: Download security analysis package
+        uses: actions/download-artifact@v3
+        with:
+          name: securityAnalysis
+
+      - name: Upload and Run SAST in Sandbox
+        continue-on-error: true
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: veracode/veracode-uploadandscan-action@master
+        env:
+          VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+          VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
+          AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
+        with:
+          vid: '$VeracodeID'
+          vkey: '$VeracodeKey'
+          criticality: 'VeryHigh'
+          appname: '$AppName'
+          createsandbox: true
+          sandboxname: ${GITHUB_REF#refs/heads/}
+          filepath: 'securityAnalysis.zip'
+          deleteIncompleteScan: false
+          version: ${{ github.run_id }}
+          scanallnonfataltoplevelmodules: true
+          includenewmodules: true
+
+      - name: Upload and Run SAST in Production
+        continue-on-error: true
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: veracode/veracode-uploadandscan-action@master
+        env:
+          VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+          VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
+          AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
+        with:
+          vid: '$VeracodeID'
+          vkey: '$VeracodeKey'
+          criticality: 'VeryHigh'
+          appname: '$AppName'
+          filepath: 'securityAnalysis.zip'
+          deleteIncompleteScan: false
+          version: ${{ github.run_id }}
+          scanallnonfataltoplevelmodules: true
+          includenewmodules: true
