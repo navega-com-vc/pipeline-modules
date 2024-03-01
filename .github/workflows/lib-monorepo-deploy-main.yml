@@ -1,4 +1,4 @@
-name: lib-deploy-main
+name: lib-monorepo-deploy-main
 
 on:
   workflow_call:
