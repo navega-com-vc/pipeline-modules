@@ -79,6 +79,8 @@ jobs:
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
+          cd ..
+          ls -a
           yarn install
 
       # Comprime o projeto executável
