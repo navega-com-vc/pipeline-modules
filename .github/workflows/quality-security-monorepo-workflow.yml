@@ -74,12 +74,12 @@ jobs:
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
-          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
-          echo "always-auth=true" >> ~/.npmrc
           cd ..
           ls -a
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}          
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
           yarn install
 
       # Comprime o projeto executável
