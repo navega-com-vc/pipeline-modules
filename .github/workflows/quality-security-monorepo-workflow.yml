@@ -72,7 +72,6 @@ jobs:
           path: securityAnalysis.zip
 
       - name: Set JFrog NPM Registry      
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}/..
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
@@ -81,9 +80,12 @@ jobs:
 
 
       - name: Install
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}/..
         run: | 
           yarn install
+
+      - name: Build dependencies
+        run: |
+          yarn build 
 
       # Comprime o projeto executável
       - name: Compress runnable project
