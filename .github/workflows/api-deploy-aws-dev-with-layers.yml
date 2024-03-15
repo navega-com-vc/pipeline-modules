@@ -1,0 +1,146 @@
+name: api-deploy-dev
+
+on:
+  workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
+
+    secrets:
+      ARTIFACTORY_NPM_REGISTRY:
+        required: true
+      ARTIFACTORY_AUTH:
+        required: true
+      ARTIFACTORY_EMAIL:
+        required: true
+
+      AWS_ACCESS_KEY_ID_DEV:
+        required: true
+      AWS_SECRET_ACCESS_KEY_DEV:
+        required: true
+      AWS_REGION_DEV:
+        required: true
+
+      SUBNET_APP_A_DEV:
+        required: false
+      SUBNET_APP_B_DEV:
+        required: false
+      SECURITY_GROUP_API_DEV:
+        required: false
+
+      DATABASE_HOST_DEV:
+        required: false
+      DATABASE_USERNAME_DEV:
+        required: false
+      DATABASE_PASSWORD_DEV:
+        required: false
+      DATABASE_NAME_DEV:
+        required: false
+
+      DD_API_KEY:
+        required: true
+
+      LOG_LEVEL_DEV:
+        required: true
+
+      ENV_DEV:
+        required: true
+
+      NAVEGA_API_URL_DEV:
+        required: false
+
+      KEYCLOAK_URL_DEV:
+        required: false
+      KEYCLOAK_USERNAME_ADMIN_DEV:
+        required: false
+      KEYCLOAK_PASSWORD_ADMIN_DEV:
+        required: false
+
+      AWS_DYNAMODB_REGION_DEV:
+        required: false
+      AWS_DYNAMODB_VERSION_DEV:
+        required: false
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV:
+        required: false
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ${{ inputs.RUNS_ON }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+
+      KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+      KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+
+      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_DEV}}
+      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_DEV}}
+      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_DEV}}
+
+      NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
+
+      LOG_LEVEL: ${{secrets.LOG_LEVEL_DEV}}
+      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      ENV: ${{secrets.ENV_DEV}}
+
+      AWS_DYNAMODB_REGION: ${{secrets.AWS_REGION_DEV}}
+      AWS_DYNAMODB_VERSION: ${{secrets.AWS_DYNAMODB_VERSION_DEV}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{secrets.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV}}
+
+      EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER_DEV }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_DEV }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          
+          # Install dependencies in the root directory
+          if [ -f "package.json" ]; then
+            yarn install
+          fi
+
+          # Install dependencies in subdirectories of 'layer'
+          if [ -d "layer" ]; then
+            for dir in layer/*/; do
+              if [ -f "$dir/package.json" ]; then
+                (cd "$dir" && yarn install)
+              fi
+            done
+          fi
+
+      - name: Development Deploy
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          export VERSION=$(node -p "require('./package.json').version")
+          export AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_DEV}}
+          export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
+          export AWS_REGION=${{secrets.AWS_REGION_DEV}}
+          npm i -g serverless
+          sls deploy --force --stage ${{secrets.ENV_DEV}} --region $AWS_REGION
