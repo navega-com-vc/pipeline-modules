@@ -24,26 +24,15 @@ jobs:
           node-version: 18
 
       - name: Set JFrog NPM Registry
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}/..
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
 
-      - name: Install
+      - name: Install & Build
         run: |
-          yarn install 
-
-      - name: Build dependencies
-        run: |
-          yarn build 
-
-      - name: Build lib
-        if: ${{ !inputs.WORKING_DIRECTORY }} !== 'data'
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          yarn build
+          yarn ci
 
       - name: Deploy Lib
         uses: jfrog/setup-jfrog-cli@v3
@@ -53,7 +42,6 @@ jobs:
       - run: |
           cd ${{ inputs.WORKING_DIRECTORY }}
           jf c add f3capital --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
-          jf c show
           jf npmc --server-id-resolve=f3capital --repo-resolve=${{secrets.ARTIFACTORY_NPM_REPOSITORY}} --server-id-deploy=f3capital --repo-deploy=${{secrets.ARTIFACTORY_NPM_REPOSITORY}}
           export BUILD_NAME=$(node -p "require('./package.json').name")
           export BUILD_VERSION=$(node -p "require('./package.json').version")
