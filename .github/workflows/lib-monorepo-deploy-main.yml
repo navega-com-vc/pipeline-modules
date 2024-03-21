@@ -31,8 +31,9 @@ jobs:
           echo "always-auth=true" >> ~/.npmrc
 
       - name: Setup Core
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          cd code
+          cd ../core
           yarn
           yarn build
 
