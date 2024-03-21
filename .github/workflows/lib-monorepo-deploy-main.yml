@@ -32,7 +32,7 @@ jobs:
 
       - name: Setup Core
         run: |
-          cd ../code
+          cd code
           yarn
           yarn build
 
