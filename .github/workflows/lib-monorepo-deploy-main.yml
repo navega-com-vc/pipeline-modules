@@ -30,10 +30,17 @@ jobs:
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
 
-      - name: Install & Build
+      - name: Setup Core
+        run: |
+          cd ../code
+          yarn
+          yarn build
+
+      - name: Setup Lib
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn ci
+          yarn
+          yarn build
 
       - name: Deploy Lib
         uses: jfrog/setup-jfrog-cli@v3
