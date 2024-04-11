@@ -79,6 +79,10 @@ jobs:
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       ENV: ${{secrets.ENV_PRD}}
 
+      EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER_PRD }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_PRD }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_PRD }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
