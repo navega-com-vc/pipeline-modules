@@ -41,3 +41,11 @@ jobs:
           jf npm install --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
           jf rt bce $BUILD_NAME $BUILD_VERSION
           jf npm publish --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
+
+      - name: Tag version
+        run: |
+          git config --global user.email "ti@f3capital.com.br"
+          git config --global user.name "TI F3 Capital"
+          export BUILD_VERSION=$(node -p "require('./package.json').version")
+          git tag -a $BUILD_VERSION -m "Version $BUILD_VERSION"
+          git push origin $BUILD_VERSION
