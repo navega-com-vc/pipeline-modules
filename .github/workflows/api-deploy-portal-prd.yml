@@ -52,13 +52,6 @@ on:
       DD_API_KEY:
         required: true
 
-      DATABASE_DATA_SOURCE:
-        required: false
-      DATABASE_API_URL:
-        required: false
-      DATABASE_API_KEY:
-        required: false
-        
 jobs:
   deploy-prd:
     if: github.ref == 'refs/heads/main'
@@ -89,10 +82,6 @@ jobs:
       EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER_PRD }}
       EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_PRD }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_PRD }}
-
-      DATABASE_DATA_SOURCE: ${{ secrets.DATABASE_DATA_SOURCE }}
-      DATABASE_API_URL: ${{ secrets.DATABASE_API_URL }}
-      DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY }}
 
     steps:
       - name: Checkout
