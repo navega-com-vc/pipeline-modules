@@ -169,6 +169,7 @@ jobs:
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
           path: './securityAnalysis.zip'
         run: |
+          ls -a
           cd ${{ inputs.WORKING_DIRECTORY }}
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip pipeline-scan-LATEST.zip
