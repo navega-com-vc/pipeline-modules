@@ -1,7 +1,7 @@
 name: navega-libs-deploy-main
 
 on:
-  workflow_call:  
+  workflow_call:
     inputs:
       WORKING_DIRECTORY:
         type: string
