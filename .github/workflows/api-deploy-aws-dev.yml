@@ -81,7 +81,7 @@ jobs:
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
 
       DATABASE_DATA_SOURCE: ${{ secrets.DATABASE_DATA_SOURCE_DEV }}
-      DATABASE_API_URL: ${{ secrets.DATABASE_API_URL_DEV }}
+      DATABASE_API_URL: ${{ secrets.DATABASE_API_URL }}
       DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_DEV }}
 
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
