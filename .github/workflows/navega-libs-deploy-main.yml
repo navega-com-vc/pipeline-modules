@@ -31,12 +31,12 @@ jobs:
           yarn build
 
       - name: Deploy Lib      
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         uses: jfrog/setup-jfrog-cli@v3
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
       - run: |
+          cd ${{ inputs.WORKING_DIRECTORY }}
           jf --v
           jf c add f3capital --artifactory-url=${{secrets.ARTIFACTORY_URL}} --user=${{secrets.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
           jf c show
