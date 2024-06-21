@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy-lib:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/BETA' || github.ref == 'refs/heads/fix/navega-data-in-portal-configurations-api'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/BETA'
     runs-on: ubuntu-latest
 
     steps:
