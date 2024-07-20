@@ -18,4 +18,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh pr list --base main --state merged --json title,url,author,mergedAt --jq '.[] | {title, url, author: .author.login, mergedAt: .mergedAt}' > prs.json
-          echo "::set-output name=prs::$(cat prs.json)"          
+          echo "$(cat prs.json)"          
