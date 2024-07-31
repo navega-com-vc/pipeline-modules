@@ -57,6 +57,11 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
       # Comprime os arquivos do repositório para análise de segurança
       - name: Compress files for security analysis
         uses: thedoctor0/zip-release@master
