@@ -39,7 +39,7 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
-          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
 
@@ -51,28 +51,28 @@ jobs:
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn install
+          npm install
           
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn lint
+          npm run lint
           
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn audit --groups dependencies
+          npm audit --groups dependencies
           
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn test
+          npm test
           
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          npm run sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
