@@ -1,4 +1,4 @@
-name: monorepo-quality-security-workflow
+name: quality-security-workflow
 
 on:
   workflow_call:
@@ -30,12 +30,18 @@ env:
   DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
   DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
 
+  DATABASE_DATA_SOURCE: ${{ secrets.DATABASE_DATA_SOURCE_DEV }}
+  DATABASE_API_URL: ${{ secrets.DATABASE_API_URL }}
+  DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_DEV }}
+
   KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
   KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
   KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
   KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
   KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
   KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+
+  NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
 
   ENV: ${{ secrets.ENV_DEV }}
 
@@ -56,7 +62,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
 
       # Comprime os arquivos do repositório para análise de segurança
       - name: Compress files for security analysis
@@ -74,14 +80,11 @@ jobs:
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          cd ..
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
-          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
-          cp ~/.npmrc ./.npmrc
-          yarn install
-          yarn build
+          npm install
 
       # Comprime o projeto executável
       - name: Compress runnable project
@@ -111,27 +114,25 @@ jobs:
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn lint
+          npm run lint
 
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn audit --groups dependencies
+          npm audit --groups dependencies
 
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn test
+          npm test
 
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
-          cd ../core 
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          npm run sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
   runSCA:
     runs-on: ubuntu-latest
@@ -205,6 +206,8 @@ jobs:
           filepath: 'securityAnalysis.zip'
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
+          scanallnonfataltoplevelmodules: true
+          includenewmodules: true
 
       - name: Upload and Run SAST in Production
         continue-on-error: true
@@ -222,3 +225,5 @@ jobs:
           filepath: 'securityAnalysis.zip'
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
+          scanallnonfataltoplevelmodules: true
+          includenewmodules: true

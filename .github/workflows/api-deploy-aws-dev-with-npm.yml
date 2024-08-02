@@ -1,4 +1,4 @@
-name: monorepo-api-deploy-dev
+name: api-deploy-dev
 
 on:
   workflow_call:
@@ -66,6 +66,11 @@ on:
       AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV:
         required: false
 
+      USE_WRITE_COMMAND_WITH_QUEUE_DEV:
+        required: false
+      WRITE_COMMAND_MESSAGE_BATCH_SIZE_DEV:
+        required: false
+
 jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/dev'
@@ -79,6 +84,10 @@ jobs:
       DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
+
+      DATABASE_DATA_SOURCE: ${{ secrets.DATABASE_DATA_SOURCE_DEV }}
+      DATABASE_API_URL: ${{ secrets.DATABASE_API_URL }}
+      DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_DEV }}
 
       KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
       KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
@@ -102,6 +111,9 @@ jobs:
       EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_DEV }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
 
+      USE_WRITE_COMMAND_WITH_QUEUE: ${{ secrets.USE_WRITE_COMMAND_WITH_QUEUE_DEV }}
+      WRITE_COMMAND_MESSAGE_BATCH_SIZE: ${{ secrets.WRITE_COMMAND_MESSAGE_BATCH_SIZE_DEV }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -111,19 +123,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          cd ..
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
-          cp ~/.npmrc ./.npmrc
-          yarn install
-          yarn build
+          
+          # Install dependencies in the root directory
+          if [ -f "package.json" ]; then
+            npm install
+          fi
+
+          # Install dependencies in subdirectories of 'layer'
+          if [ -d "layer" ]; then
+            for dir in layer/*/; do
+              if [ -f "$dir/package.json" ]; then
+                (cd "$dir" && npm install)
+              fi
+            done
+          fi
 
       - name: Development Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -133,4 +155,4 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
           export AWS_REGION=${{secrets.AWS_REGION_DEV}}
           npm i -g serverless@3
-          sls deploy --stage ${{secrets.ENV_DEV}} --region $AWS_REGION
+          sls deploy --force --stage ${{secrets.ENV_DEV}} --region $AWS_REGION

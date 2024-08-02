@@ -81,11 +81,11 @@ jobs:
 
       - name: Install
         run: | 
-          npm install
+          yarn install
 
       - name: Build dependencies
         run: |
-          npm run build 
+          yarn build 
 
       # Comprime o projeto executável
       - name: Compress runnable project
@@ -115,25 +115,25 @@ jobs:
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm run lint
+          yarn lint
 
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm audit --groups dependencies
+          yarn audit --groups dependencies
 
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm test
+          yarn test
 
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm run sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
   runSCA:
     runs-on: ubuntu-latest
