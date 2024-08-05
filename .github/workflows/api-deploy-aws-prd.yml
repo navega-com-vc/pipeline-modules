@@ -112,6 +112,8 @@ jobs:
       USE_WRITE_COMMAND_WITH_QUEUE: ${{ secrets.USE_WRITE_COMMAND_WITH_QUEUE_PRD }}
       WRITE_COMMAND_MESSAGE_BATCH_SIZE: ${{ secrets.WRITE_COMMAND_MESSAGE_BATCH_SIZE_PRD }}
 
+      USE_ATLAS_API_REQUEST: ${{ secrets.USE_ATLAS_API_REQUEST }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
