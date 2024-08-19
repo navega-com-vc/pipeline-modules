@@ -68,7 +68,7 @@ jobs:
       - name: Compress files for security analysis
         uses: thedoctor0/zip-release@master
         with:
-          filename: 'securityAnalysis.zip'
+          filename: "securityAnalysis.zip"
           path: .
 
       - name: Upload security analysis files
@@ -84,7 +84,7 @@ jobs:
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
-          yarn install
+          npm install
 
       # Comprime o projeto executável
       - name: Compress runnable project
@@ -114,25 +114,25 @@ jobs:
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn lint
+          npm run lint
 
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn audit --groups dependencies
+          npm audit --production
 
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn test
+          npm run test
 
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          npm run sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
   # runSCA:
   #   runs-on: ubuntu-latest

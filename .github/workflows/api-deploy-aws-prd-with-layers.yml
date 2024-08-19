@@ -125,14 +125,14 @@ jobs:
           
           # Install dependencies in the root directory
           if [ -f "package.json" ]; then
-            yarn install
+            npm install
           fi
 
           # Install dependencies in subdirectories of 'layer'
           if [ -d "layer" ]; then
             for dir in layer/*/; do
               if [ -f "$dir/package.json" ]; then
-                (cd "$dir" && yarn install)
+                (cd "$dir" && npm install)
               fi
             done
           fi

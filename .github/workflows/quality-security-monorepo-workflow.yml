@@ -62,7 +62,7 @@ jobs:
       - name: Compress files for security analysis
         uses: thedoctor0/zip-release@master
         with:
-          filename: 'securityAnalysis.zip'
+          filename: "securityAnalysis.zip"
           path: .
 
       - name: Upload security analysis files
@@ -71,21 +71,20 @@ jobs:
           name: securityAnalysis
           path: securityAnalysis.zip
 
-      - name: Set JFrog NPM Registry      
+      - name: Set JFrog NPM Registry
         run: |
           npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
 
-
       - name: Install
-        run: | 
-          yarn install
+        run: |
+          npm install
 
       - name: Build dependencies
         run: |
-          yarn build 
+          npm run build
 
       # Comprime o projeto executável
       - name: Compress runnable project
@@ -115,25 +114,25 @@ jobs:
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn lint
+          npm run lint
 
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn audit --groups dependencies
+          npm audit --production
 
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn test
+          npm run test
 
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          npm run sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
   runSCA:
     runs-on: ubuntu-latest
@@ -168,7 +167,7 @@ jobs:
         env:
           VeracodeID: ${{ secrets.VERACODE_APP_ID }}
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
-          path: './securityAnalysis.zip'
+          path: "./securityAnalysis.zip"
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip pipeline-scan-LATEST.zip
@@ -198,13 +197,13 @@ jobs:
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
           AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
         with:
-          vid: '$VeracodeID'
-          vkey: '$VeracodeKey'
-          criticality: 'VeryHigh'
-          appname: '$AppName'
+          vid: "$VeracodeID"
+          vkey: "$VeracodeKey"
+          criticality: "VeryHigh"
+          appname: "$AppName"
           createsandbox: true
           sandboxname: ${GITHUB_REF#refs/heads/}
-          filepath: 'securityAnalysis.zip'
+          filepath: "securityAnalysis.zip"
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
           scanallnonfataltoplevelmodules: true
@@ -219,11 +218,11 @@ jobs:
           VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
           AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
         with:
-          vid: '$VeracodeID'
-          vkey: '$VeracodeKey'
-          criticality: 'VeryHigh'
-          appname: '$AppName'
-          filepath: 'securityAnalysis.zip'
+          vid: "$VeracodeID"
+          vkey: "$VeracodeKey"
+          criticality: "VeryHigh"
+          appname: "$AppName"
+          filepath: "securityAnalysis.zip"
           deleteIncompleteScan: false
           version: ${{ github.run_id }}
           scanallnonfataltoplevelmodules: true
