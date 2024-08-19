@@ -28,7 +28,7 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,32 +47,32 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           sh ../build-libs.sh
-          
+
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn install
-          
+          npm install
+
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn lint
-          
+          npm run lint
+
       - name: Audit
         if: ${{ !inputs.SKIP_AUDIT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn audit --groups dependencies
-          
+          npm audit --production
+
       - name: Tests
         if: ${{ !inputs.SKIP_TESTS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn test
-          
+          npm run test
+
       - name: Sonarqube
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          npm run sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8

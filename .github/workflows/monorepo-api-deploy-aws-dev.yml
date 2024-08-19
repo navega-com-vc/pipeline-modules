@@ -122,8 +122,8 @@ jobs:
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           cp ~/.npmrc ./.npmrc
-          yarn install
-          yarn build
+          npm install
+          npm run build
 
       - name: Development Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}

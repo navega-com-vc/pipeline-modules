@@ -34,14 +34,14 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           cd ../core
-          yarn
-          yarn build
+          npm install
+          npm run build
 
       - name: Setup Lib
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn
-          yarn build
+          npm install
+          npm run build
 
       - name: Deploy Lib
         uses: jfrog/setup-jfrog-cli@v3
