@@ -20,11 +20,11 @@ jobs:
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
-          npm install
+          yarn install
 
       - name: Build
         run: |
-          npm run build
+          yarn build
 
       - name: Deploy Lib
         uses: jfrog/setup-jfrog-cli@v3
