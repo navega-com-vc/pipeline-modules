@@ -105,6 +105,10 @@ jobs:
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          # Clean cache
+          npm cache clean --force
+          yarn cache clean
+          
           # Install dependencies in the root directory
           if [ -f "package.json" ]; then
             yarn install
