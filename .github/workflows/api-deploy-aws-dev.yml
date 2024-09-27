@@ -71,6 +71,13 @@ on:
       WRITE_COMMAND_MESSAGE_BATCH_SIZE_DEV:
         required: false
 
+      EMAIL_PROVIDER_DEV:
+        required: false
+      EMAIL_USERNAME_DEV:
+        required: false
+      EMAIL_PASSWORD_DEV:
+        required: false
+
 jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/dev'
