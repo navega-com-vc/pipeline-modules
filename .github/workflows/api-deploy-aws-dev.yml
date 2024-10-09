@@ -77,7 +77,9 @@ on:
         required: false
       EMAIL_PASSWORD_DEV:
         required: false
-
+      
+      MAX_OUTPUT_DATA_SIZE_IN_MB:
+        required: false
 jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/dev'
@@ -123,6 +125,7 @@ jobs:
 
       USE_ATLAS_API_REQUEST: ${{ secrets.USE_ATLAS_API_REQUEST }}
 
+      MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ secrets.MAX_OUTPUT_DATA_SIZE_IN_MB}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

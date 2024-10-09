@@ -71,6 +71,8 @@ on:
       WRITE_COMMAND_MESSAGE_BATCH_SIZE_STG:
         required: false
 
+      MAX_OUTPUT_DATA_SIZE_IN_MB:
+        required: false
 jobs:
   deploy-stg:
     if: github.ref == 'refs/heads/stg'
@@ -116,6 +118,7 @@ jobs:
 
       USE_ATLAS_API_REQUEST: ${{ secrets.USE_ATLAS_API_REQUEST }}
 
+      MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ secrets.MAX_OUTPUT_DATA_SIZE_IN_MB }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
