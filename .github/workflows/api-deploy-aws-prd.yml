@@ -68,6 +68,9 @@ on:
         required: false
       WRITE_COMMAND_MESSAGE_BATCH_SIZE_PRD:
         required: false
+        
+      MAX_OUTPUT_DATA_SIZE_IN_MB:
+        required: false
 
 jobs:
   deploy-prd:
@@ -113,6 +116,8 @@ jobs:
       WRITE_COMMAND_MESSAGE_BATCH_SIZE: ${{ secrets.WRITE_COMMAND_MESSAGE_BATCH_SIZE_PRD }}
 
       USE_ATLAS_API_REQUEST: ${{ secrets.USE_ATLAS_API_REQUEST }}
+      
+      MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ secrets.MAX_OUTPUT_DATA_SIZE_IN_MB }}
 
     steps:
       - name: Checkout
