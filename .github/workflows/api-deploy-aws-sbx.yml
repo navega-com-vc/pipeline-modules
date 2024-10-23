@@ -69,9 +69,14 @@ on:
       WRITE_COMMAND_MESSAGE_BATCH_SIZE_SBX:
         required: false
 
+      # env MAX_OUTPUT_DATA_SIZE_IN_MB utilizada no workflows-api, para limitar o tamanho do output maximo a ser retornado
+      # limitamos ele em uma tamanho menor, pois a ideia é q o output limitado, seja utilizado mais pelo front
+      # dessa maneira o tamanho do output é limitado a 1MB, q ja é bastante informação para ser exibida
       MAX_OUTPUT_DATA_SIZE_IN_MB:
         required: false
 
+      # env RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB é similar ao MAX_OUTPUT_DATA_SIZE_IN_MB, mas quem utilizará esse endpoint
+      # serão os backend, com os resultados dos processos, por isso o tamanho do output é maior
       RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB:
         required: false
       TIMEOUT_TASK_EXECUTION_IN_SECONDS:
