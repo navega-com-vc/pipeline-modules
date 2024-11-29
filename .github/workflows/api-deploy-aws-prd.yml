@@ -134,6 +134,8 @@ jobs:
       TIMEOUT_TASK_EXECUTION_IN_SECONDS: ${{ secrets.TIMEOUT_TASK_EXECUTION_IN_SECONDS}}
       FREE_MEMORY_LIMIT_IN_MB: ${{ secrets.FREE_MEMORY_LIMIT_IN_MB}}
 
+      CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_PRD }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
