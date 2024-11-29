@@ -92,9 +92,7 @@ on:
         required: false
       FREE_MEMORY_LIMIT_IN_MB:
         required: false
-env:
-  CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_DEV }}
-  
+
 jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/dev'
@@ -145,7 +143,7 @@ jobs:
       TIMEOUT_TASK_EXECUTION_IN_SECONDS: ${{ secrets.TIMEOUT_TASK_EXECUTION_IN_SECONDS}}
       FREE_MEMORY_LIMIT_IN_MB: ${{ secrets.FREE_MEMORY_LIMIT_IN_MB}}
 
-      CF_DISTRIBUTION_NAVEGA: $CF_DISTRIBUTION_NAVEGA
+      CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_DEV }}
 
     steps:
       - name: Checkout
