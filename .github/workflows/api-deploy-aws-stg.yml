@@ -85,6 +85,9 @@ on:
         required: false
       FREE_MEMORY_LIMIT_IN_MB:
         required: false
+
+      MFA_KEY_STG:
+        required: false
 jobs:
   deploy-stg:
     if: github.ref == 'refs/heads/stg'
@@ -134,6 +137,8 @@ jobs:
       RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ secrets.RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB }}
       TIMEOUT_TASK_EXECUTION_IN_SECONDS: ${{ secrets.TIMEOUT_TASK_EXECUTION_IN_SECONDS}}
       FREE_MEMORY_LIMIT_IN_MB: ${{ secrets.FREE_MEMORY_LIMIT_IN_MB}}
+
+      MFA_KEY: ${{ secrets.MFA_KEY_STG }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

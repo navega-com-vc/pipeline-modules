@@ -83,6 +83,9 @@ on:
         required: false
       FREE_MEMORY_LIMIT_IN_MB:
         required: false
+
+      MFA_KEY_SBX:
+        required: false
 jobs:
   deploy-sbx:
     if: github.ref == 'refs/heads/sbx'
@@ -127,12 +130,13 @@ jobs:
       WRITE_COMMAND_MESSAGE_BATCH_SIZE: ${{ secrets.WRITE_COMMAND_MESSAGE_BATCH_SIZE_SBX }}
 
       USE_ATLAS_API_REQUEST: ${{ secrets.USE_ATLAS_API_REQUEST }}
-      
+
       MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ secrets.MAX_OUTPUT_DATA_SIZE_IN_MB }}
       RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ secrets.RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB }}
       TIMEOUT_TASK_EXECUTION_IN_SECONDS: ${{ secrets.TIMEOUT_TASK_EXECUTION_IN_SECONDS}}
       FREE_MEMORY_LIMIT_IN_MB: ${{ secrets.FREE_MEMORY_LIMIT_IN_MB}}
 
+      MFA_KEY: ${{ secrets.MFA_KEY_SBX }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
