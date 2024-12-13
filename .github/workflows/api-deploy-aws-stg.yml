@@ -88,6 +88,11 @@ on:
 
       MFA_KEY_STG:
         required: false
+
+      NAVEGA_API_REPORT_USERNAME:
+        required: false
+      NAVEGA_API_REPORT_PASSWORD:
+        required: false
 jobs:
   deploy-stg:
     if: github.ref == 'refs/heads/stg'
@@ -142,6 +147,9 @@ jobs:
       INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_STG }}
 
       MFA_KEY: ${{ secrets.MFA_KEY_STG }}
+
+      NAVEGA_API_REPORT_USERNAME: ${{ vars.NAVEGA_API_REPORT_USERNAME }}
+      NAVEGA_API_REPORT_PASSWORD: ${{ secrets.NAVEGA_API_REPORT_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

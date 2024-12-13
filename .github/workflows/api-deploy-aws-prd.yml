@@ -87,6 +87,10 @@ on:
       MFA_KEY_PRD:
         required: false
 
+      NAVEGA_API_REPORT_USERNAME:
+        required: false
+      NAVEGA_API_REPORT_PASSWORD:
+        required: false
 jobs:
   deploy-prd:
     if: github.ref == 'refs/heads/main'
@@ -141,6 +145,9 @@ jobs:
       INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_PRD }}
 
       MFA_KEY: ${{ secrets.MFA_KEY_PRD }}
+
+      NAVEGA_API_REPORT_USERNAME: ${{ vars.NAVEGA_API_REPORT_USERNAME }}
+      NAVEGA_API_REPORT_PASSWORD: ${{ secrets.NAVEGA_API_REPORT_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

@@ -95,6 +95,11 @@ on:
 
       MFA_KEY_DEV:
         required: false
+
+      NAVEGA_API_REPORT_USERNAME:
+        required: false
+      NAVEGA_API_REPORT_PASSWORD:
+        required: false
 jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/dev'
@@ -149,6 +154,9 @@ jobs:
       INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_DEV }}
 
       MFA_KEY: ${{ secrets.MFA_KEY_DEV }}
+
+      NAVEGA_API_REPORT_USERNAME: ${{ vars.NAVEGA_API_REPORT_USERNAME }}
+      NAVEGA_API_REPORT_PASSWORD: ${{ secrets.NAVEGA_API_REPORT_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
