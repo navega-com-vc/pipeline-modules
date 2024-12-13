@@ -137,6 +137,7 @@ jobs:
       FREE_MEMORY_LIMIT_IN_MB: ${{ secrets.FREE_MEMORY_LIMIT_IN_MB}}
 
       CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_SBX }}
+      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_SBX }}
 
       MFA_KEY: ${{ secrets.MFA_KEY_SBX }}
     steps:
