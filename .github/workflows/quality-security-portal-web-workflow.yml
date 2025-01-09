@@ -61,7 +61,7 @@ jobs:
           path: .
 
       - name: Upload security analysis files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: securityAnalysis
           path: securityAnalysis.zip
@@ -91,7 +91,7 @@ jobs:
           tar --exclude=${{ github.sha }}.tar.gz -czf ${{ github.sha }}.tar.gz .
 
       - name: Upload compressed project
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}
           path: ${{ github.sha }}.tar.gz
@@ -101,7 +101,7 @@ jobs:
     needs: install
     steps:
       - name: Download compressed project
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ github.sha }}
 
@@ -137,7 +137,7 @@ jobs:
     needs: install
     steps:
       - name: Download compressed project
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ github.sha }}
 
@@ -156,7 +156,7 @@ jobs:
     needs: install
     steps:
       - name: Download security analysis package
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: securityAnalysis
 
@@ -182,7 +182,7 @@ jobs:
     needs: install
     steps:
       - name: Download security analysis package
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: securityAnalysis
 
