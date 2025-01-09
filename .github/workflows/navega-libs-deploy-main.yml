@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 
@@ -24,14 +24,14 @@ jobs:
           npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
-      
-      - name: Build       
+
+      - name: Build
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn build
 
-      - name: Deploy Lib      
-        uses: jfrog/setup-jfrog-cli@v3
+      - name: Deploy Lib
+        uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
