@@ -64,6 +64,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Fix npm config
+        run: npm config fix
+
       # Comprime os arquivos do repositório para análise de segurança
       - name: Compress files for security analysis
         uses: thedoctor0/zip-release@master
