@@ -21,6 +21,9 @@ on:
       CONTINUE_ON_SONARQUBE_ERROR:
         type: boolean
         default: false
+      SONARQUBE_DIRECTORY:
+        type: string
+        default: core
       WORKING_DIRECTORY:
         type: string
 
@@ -129,8 +132,7 @@ jobs:
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
-          cd ../core 
+          cd ../${{ inputs.SONARQUBE_DIRECTORY }}
           yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
   runSCA:
