@@ -25,7 +25,7 @@ on:
       NAVEGA_API_REPORT_PASSWORD:
         required: false
 jobs:
-  deploy-sbx:
+  deploy-pre-sbx:
     if: github.ref == 'refs/heads/sbx'
     runs-on: ${{ inputs.RUNS_ON }}
     concurrency:
