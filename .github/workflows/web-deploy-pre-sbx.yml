@@ -1,0 +1,50 @@
+name: web-deploy-sbx
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-pre-sbx:
+    if: github.ref == 'refs/heads/pre-sbx'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      API_URL: ${{vars.NAVEGA_API_URL_PRE_SBX}}
+      DATADOG_CLIENT_TOKEN: ${{secrets.DATADOG_CLIENT_TOKEN_PRE_PRE_SBX}}
+      DATADOG_APPLICATION_ID: ${{vars.DATADOG_APPLICATION_ID_PRE_SBX}}
+      DATADOG_SAMPLE_RATE: ${{vars.DATADOG_SAMPLE_RATE_SBX}}
+      DATADOG_SERVICE: navega-web-pre-sbx
+      DATADOG_ENV: pre-sbx
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install
+        run: |
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          yarn install
+
+      - name: Build
+        run: |
+          yarn build
+
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID_SBX }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SBX }}
+          aws-region: ${{ vars.AWS_REGION_SBX }}
+
+      - name: Pre-Sandbox Deploy AWS
+        run: |
+          aws s3 sync dist/ s3://pre-sbx.navega.com.vc --delete
+          aws cloudfront create-invalidation --distribution-id=TBD --paths "/*"

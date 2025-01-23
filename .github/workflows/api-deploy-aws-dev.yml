@@ -8,95 +8,20 @@ on:
       RUNS_ON:
         type: string
         default: ubuntu-latest
-
     secrets:
-      ARTIFACTORY_NPM_REGISTRY:
-        required: true
       ARTIFACTORY_AUTH:
-        required: true
-      ARTIFACTORY_EMAIL:
-        required: true
-
-      AWS_ACCESS_KEY_ID_DEV:
         required: true
       AWS_SECRET_ACCESS_KEY_DEV:
         required: true
-      AWS_REGION_DEV:
-        required: true
-
-      SUBNET_APP_A_DEV:
-        required: false
-      SUBNET_APP_B_DEV:
-        required: false
-      SECURITY_GROUP_API_DEV:
-        required: false
-
-      DATABASE_HOST_DEV:
-        required: false
-      DATABASE_USERNAME_DEV:
-        required: false
       DATABASE_PASSWORD_DEV:
         required: false
-      DATABASE_NAME_DEV:
-        required: false
-
       DD_API_KEY:
         required: true
-
-      LOG_LEVEL_DEV:
-        required: true
-
-      ENV_DEV:
-        required: true
-
-      NAVEGA_API_URL_DEV:
-        required: false
-
-      KEYCLOAK_URL_DEV:
-        required: false
-      KEYCLOAK_USERNAME_ADMIN_DEV:
-        required: false
       KEYCLOAK_PASSWORD_ADMIN_DEV:
-        required: false
-
-      AWS_DYNAMODB_REGION_DEV:
-        required: false
-      AWS_DYNAMODB_VERSION_DEV:
-        required: false
-      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV:
-        required: false
-
-      USE_WRITE_COMMAND_WITH_QUEUE_DEV:
-        required: false
-      WRITE_COMMAND_MESSAGE_BATCH_SIZE_DEV:
-        required: false
-
-      EMAIL_PROVIDER_DEV:
-        required: false
-      EMAIL_USERNAME_DEV:
         required: false
       EMAIL_PASSWORD_DEV:
         required: false
-
-      # env MAX_OUTPUT_DATA_SIZE_IN_MB utilizada no workflows-api, para limitar o tamanho do output maximo a ser retornado
-      # limitamos ele em uma tamanho menor, pois a ideia é q o output limitado, seja utilizado mais pelo front
-      # dessa maneira o tamanho do output é limitado a 1MB, q ja é bastante informação para ser exibida
-      MAX_OUTPUT_DATA_SIZE_IN_MB:
-        required: false
-
-      # env RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB é similar ao MAX_OUTPUT_DATA_SIZE_IN_MB, mas quem utilizará esse endpoint
-      # serão os backend, com os resultados dos processos, por isso o tamanho do output é maior
-      RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB:
-        required: false
-      TIMEOUT_TASK_EXECUTION_IN_SECONDS:
-        required: false
-      FREE_MEMORY_LIMIT_IN_MB:
-        required: false
-
       MFA_KEY_DEV:
-        required: false
-
-      NAVEGA_API_REPORT_USERNAME:
         required: false
       NAVEGA_API_REPORT_PASSWORD:
         required: false

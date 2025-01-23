@@ -13,11 +13,13 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY_PRE_SBX:
         required: true
+      DATABASE_PASSWORD_SBX:
+        required: false
       DD_API_KEY:
         required: true
-      DATABASE_PASSWORD_SBX:
-        required: true
       KEYCLOAK_PASSWORD_ADMIN_SBX:
+        required: false
+      EMAIL_PASSWORD_DEV:
         required: false
       MFA_KEY_SBX:
         required: false

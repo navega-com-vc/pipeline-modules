@@ -8,64 +8,17 @@ on:
       RUNS_ON:
         type: string
         default: ubuntu-latest
-
     secrets:
-      ARTIFACTORY_NPM_REGISTRY:
-        required: true
       ARTIFACTORY_AUTH:
-        required: true
-      ARTIFACTORY_EMAIL:
-        required: true
-
-      AWS_ACCESS_KEY_ID_PRD:
         required: true
       AWS_SECRET_ACCESS_KEY_PRD:
         required: true
-      AWS_REGION_PRD:
-        required: true
-
-      SUBNET_APP_A_PRD:
-        required: false
-      SUBNET_APP_B_PRD:
-        required: false
-      SECURITY_GROUP_API_PRD:
-        required: false
-
-      DATABASE_HOST_PRD:
-        required: false
-      DATABASE_USERNAME_PRD:
-        required: false
       DATABASE_PASSWORD_PRD:
         required: false
-      DATABASE_NAME_PRD:
-        required: false
-
       DD_API_KEY:
         required: true
-
-      LOG_LEVEL_PRD:
-        required: true
-
-      ENV_PRD:
-        required: true
-
-      NAVEGA_API_URL_PRD:
-        required: false
-
-      KEYCLOAK_URL_PRD:
-        required: false
-      KEYCLOAK_USERNAME_ADMIN_PRD:
-        required: false
       KEYCLOAK_PASSWORD_ADMIN_PRD:
         required: false
-
-      AWS_DYNAMODB_REGION_PRD:
-        required: false
-      AWS_DYNAMODB_VERSION_PRD:
-        required: false
-      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_PRD:
-        required: false
-
 jobs:
   deploy-prd:
     if: github.ref == 'refs/heads/prd'

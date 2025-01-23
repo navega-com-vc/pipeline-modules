@@ -11,12 +11,14 @@ on:
     secrets:
       ARTIFACTORY_AUTH:
         required: true
-      AWS_SECRET_ACCESS_KEY_SBX:
+      AWS_SECRET_ACCESS_KEY_PRE_SBX:
         required: true
-      DATABASE_PASSWORD_SBX:
+      DATABASE_PASSWORD_PRE_SBX:
         required: false
       DD_API_KEY:
         required: true
+      DATABASE_API_KEY:
+        required: false
 jobs:
   deploy-pre-sbx:
     if: github.ref == 'refs/heads/pre-sbx'

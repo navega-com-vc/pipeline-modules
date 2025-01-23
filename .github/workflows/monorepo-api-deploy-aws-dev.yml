@@ -8,64 +8,17 @@ on:
       RUNS_ON:
         type: string
         default: ubuntu-latest
-
     secrets:
-      ARTIFACTORY_NPM_REGISTRY:
-        required: true
       ARTIFACTORY_AUTH:
-        required: true
-      ARTIFACTORY_EMAIL:
-        required: true
-
-      AWS_ACCESS_KEY_ID_DEV:
         required: true
       AWS_SECRET_ACCESS_KEY_DEV:
         required: true
-      AWS_REGION_DEV:
-        required: true
-
-      SUBNET_APP_A_DEV:
-        required: false
-      SUBNET_APP_B_DEV:
-        required: false
-      SECURITY_GROUP_API_DEV:
-        required: false
-
-      DATABASE_HOST_DEV:
-        required: false
-      DATABASE_USERNAME_DEV:
-        required: false
       DATABASE_PASSWORD_DEV:
         required: false
-      DATABASE_NAME_DEV:
-        required: false
-
       DD_API_KEY:
         required: true
-
-      LOG_LEVEL_DEV:
-        required: true
-
-      ENV_DEV:
-        required: true
-
-      NAVEGA_API_URL_DEV:
-        required: false
-
-      KEYCLOAK_URL_DEV:
-        required: false
-      KEYCLOAK_USERNAME_ADMIN_DEV:
-        required: false
       KEYCLOAK_PASSWORD_ADMIN_DEV:
         required: false
-
-      AWS_DYNAMODB_REGION_DEV:
-        required: false
-      AWS_DYNAMODB_VERSION_DEV:
-        required: false
-      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_DEV:
-        required: false
-
 jobs:
   deploy-dev:
     if: github.ref == 'refs/heads/dev'
