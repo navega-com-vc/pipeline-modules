@@ -26,7 +26,7 @@ on:
 
 jobs:
   quality:
-    if: ${{ !contains(fromJson('["dev", "stg", "sbx", "main"]'), github.head_ref) }}
+    if: ${{ !contains(fromJson('["dev", "stg", "pre-sbx", "sbx", "main"]'), github.head_ref) }}
     runs-on: ${{ inputs.RUNS_ON }}
     container: f3capital/aquario:latest
     concurrency:
