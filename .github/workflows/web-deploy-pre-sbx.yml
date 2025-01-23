@@ -40,9 +40,9 @@ jobs:
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID_SBX }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SBX }}
-          aws-region: ${{ vars.AWS_REGION_SBX }}
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID_PRE_SBX }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PRE_SBX }}
+          aws-region: ${{ vars.AWS_REGION_PRE_SBX }}
 
       - name: Pre-Sandbox Deploy AWS
         run: |
