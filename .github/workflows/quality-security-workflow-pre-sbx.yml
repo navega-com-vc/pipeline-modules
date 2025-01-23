@@ -180,6 +180,7 @@ jobs:
     if: contains('
       refs/heads/dev
       refs/heads/stg
+      refs/heads/pre-sbx
       refs/heads/sbx
       refs/heads/main
       ', github.ref)

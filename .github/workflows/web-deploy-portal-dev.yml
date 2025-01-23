@@ -19,7 +19,7 @@ jobs:
 
     env:
       PORTAL_SHELL_MANIFEST: /assets/mf.manifest.json
-      PORTAL_API_URL: ${{ secrets.NAVEGA_PORTAL_API_URL_DEV }}
+      PORTAL_API_URL: ${{ vars.NAVEGA_PORTAL_API_URL_DEV }}
 
     steps:
       - name: Checkout
@@ -35,9 +35,9 @@ jobs:
       - name: Setup Jfrog
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
 
       - name: Install & Build Commons
@@ -58,9 +58,9 @@ jobs:
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID_DEV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-          aws-region: ${{ secrets.AWS_REGION_DEV }}
+          aws-region: ${{ vars.AWS_REGION_DEV }}
 
       - name: Development Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}

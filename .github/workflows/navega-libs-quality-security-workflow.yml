@@ -25,25 +25,25 @@ on:
         type: string
 
 env:
-  DATABASE_NAME: ${{secrets.DATABASE_NAME_DEV}}
-  DATABASE_HOST: ${{secrets.DATABASE_HOST_DEV}}
-  DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_DEV}}
+  DATABASE_NAME: ${{vars.DATABASE_NAME_DEV}}
+  DATABASE_HOST: ${{vars.DATABASE_HOST_DEV}}
+  DATABASE_USERNAME: ${{vars.DATABASE_USERNAME_DEV}}
   DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
 
-  DATABASE_DATA_SOURCE: ${{ secrets.DATABASE_DATA_SOURCE_DEV }}
-  DATABASE_API_URL: ${{ secrets.DATABASE_API_URL_DEV }}
+  DATABASE_DATA_SOURCE: ${{ vars.DATABASE_DATA_SOURCE_DEV }}
+  DATABASE_API_URL: ${{ vars.DATABASE_API_URL }}
   DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_DEV }}
 
-  KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL_DEV}}
+  KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}
   KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
-  KEYCLOAK_USERNAME_ADMIN: ${{secrets.KEYCLOAK_USERNAME_ADMIN_DEV}}
-  KEYCLOAK_USERNAME_TEST: ${{secrets.KEYCLOAK_USERNAME_TEST}}
+  KEYCLOAK_USERNAME_ADMIN: ${{vars.KEYCLOAK_USERNAME_ADMIN_DEV}}
+  KEYCLOAK_USERNAME_TEST: ${{vars.KEYCLOAK_USERNAME_TEST}}
   KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
   KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
 
-  NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_DEV}}
+  NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_DEV}}
 
-  ENV: ${{ secrets.ENV_DEV }}
+  ENV: ${{ vars.ENV_DEV }}
 
 jobs:
   install:
@@ -80,9 +80,9 @@ jobs:
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
 
@@ -133,7 +133,7 @@ jobs:
         continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          yarn sonar -Dsonar.host.url=${{ secrets.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
+          yarn sonar -Dsonar.host.url=${{ vars.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
 
   # runSCA:
   #   runs-on: ubuntu-latest
@@ -166,7 +166,7 @@ jobs:
   #     - name: Veracode Pipeline Scan
   #       continue-on-error: true
   #       env:
-  #         VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+  #         VeracodeID: ${{ vars.VERACODE_APP_ID }}
   #         VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
   #         path: './securityAnalysis.zip'
   #       run: |
@@ -195,7 +195,7 @@ jobs:
   #       if: ${{ github.ref != 'refs/heads/main' }}
   #       uses: veracode/veracode-uploadandscan-action@master
   #       env:
-  #         VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+  #         VeracodeID: ${{ vars.VERACODE_APP_ID }}
   #         VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
   #         AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
   #       with:
@@ -216,7 +216,7 @@ jobs:
   #       if: ${{ github.ref == 'refs/heads/main' }}
   #       uses: veracode/veracode-uploadandscan-action@master
   #       env:
-  #         VeracodeID: ${{ secrets.VERACODE_APP_ID }}
+  #         VeracodeID: ${{ vars.VERACODE_APP_ID }}
   #         VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
   #         AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
   #       with:
