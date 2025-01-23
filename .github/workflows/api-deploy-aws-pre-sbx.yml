@@ -17,7 +17,7 @@ on:
       DD_API_KEY:
         required: true
       DATABASE_PASSWORD_SBX:
-        required: false
+        required: true
       KEYCLOAK_PASSWORD_ADMIN_SBX:
         required: false
       MFA_KEY_SBX:
@@ -46,19 +46,19 @@ jobs:
       KEYCLOAK_USERNAME_ADMIN: ${{vars.KEYCLOAK_USERNAME_ADMIN_SBX}}
       KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_SBX}}
 
-      SUBNET_APP_A: ${{vars.SUBNET_APP_A_SBX}}
-      SUBNET_APP_B: ${{vars.SUBNET_APP_B_SBX}}
-      SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_SBX}}
+      SUBNET_APP_A: ${{vars.SUBNET_APP_A_PRE_SBX}}
+      SUBNET_APP_B: ${{vars.SUBNET_APP_B_PRE_SBX}}
+      SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_PRE_SBX}}
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
-      ENV: ${{vars.ENV_SBX}}
+      ENV: ${{vars.ENV_PRE_SBX}}
 
-      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_SBX}}
+      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_PRE_SBX}}
 
       AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_SBX}}
       AWS_DYNAMODB_VERSION: ${{vars.AWS_DYNAMODB_VERSION_SBX}}
-      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{vars.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_SBX}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{vars.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_PRE_SBX}}
 
       EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
       EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
@@ -74,8 +74,8 @@ jobs:
       TIMEOUT_TASK_EXECUTION_IN_SECONDS: ${{ vars.TIMEOUT_TASK_EXECUTION_IN_SECONDS}}
       FREE_MEMORY_LIMIT_IN_MB: ${{ vars.FREE_MEMORY_LIMIT_IN_MB}}
 
-      CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_SBX }}
-      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_SBX }}
+      CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_PRE_SBX }}
+      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_PRE_SBX }}
 
       MFA_KEY: ${{ secrets.MFA_KEY_SBX }}
 
@@ -118,8 +118,8 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           export VERSION=$(node -p "require('./package.json').version")
-          export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_SBX}}
-          export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
-          export AWS_REGION=${{vars.AWS_REGION_SBX}}
+          export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_PRE_SBX}}
+          export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_PRE_SBX}}
+          export AWS_REGION=${{vars.AWS_REGION_PRE_SBX}}
           npm i -g serverless@3
-          sls deploy --stage ${{vars.ENV_SBX}} --region $AWS_REGION
+          sls deploy --stage ${{vars.ENV_PRE_SBX}} --region $AWS_REGION
