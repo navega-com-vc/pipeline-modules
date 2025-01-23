@@ -12,10 +12,10 @@ jobs:
       cancel-in-progress: true
     
     env:
-      API_URL: ${{secrets.NAVEGA_API_URL_SBX}}
+      API_URL: ${{vars.NAVEGA_API_URL_SBX}}
       DATADOG_CLIENT_TOKEN: ${{secrets.DATADOG_CLIENT_TOKEN_SBX}}
-      DATADOG_APPLICATION_ID: ${{secrets.DATADOG_APPLICATION_ID_SBX}}
-      DATADOG_SAMPLE_RATE: ${{secrets.DATADOG_SAMPLE_RATE_SBX}}
+      DATADOG_APPLICATION_ID: ${{vars.DATADOG_APPLICATION_ID_SBX}}
+      DATADOG_SAMPLE_RATE: ${{vars.DATADOG_SAMPLE_RATE_SBX}}
       DATADOG_SERVICE: navega-web-sbx
       DATADOG_ENV: sbx
 
@@ -27,9 +27,9 @@ jobs:
 
       - name: Install
         run: |
-          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
 
@@ -40,9 +40,9 @@ jobs:
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_SBX }}
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID_SBX }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SBX }}
-          aws-region: ${{ secrets.AWS_REGION_SBX }}
+          aws-region: ${{ vars.AWS_REGION_SBX }}
 
       - name: Sandbox Deploy AWS
         run: |

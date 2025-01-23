@@ -8,11 +8,10 @@ on:
       RUNS_ON:
         type: string
         default: ubuntu-latest
-
     secrets:
       ARTIFACTORY_AUTH:
         required: true
-      AWS_SECRET_ACCESS_KEY_SBX:
+      AWS_SECRET_ACCESS_KEY_PRE_SBX:
         required: true
       DD_API_KEY:
         required: true

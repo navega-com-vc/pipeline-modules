@@ -52,30 +52,30 @@ jobs:
       cancel-in-progress: true
 
     env:
-      DATABASE_HOST: ${{secrets.DATABASE_HOST_SBX}}
-      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME_SBX}}
+      DATABASE_HOST: ${{vars.DATABASE_HOST_SBX}}
+      DATABASE_USERNAME: ${{vars.DATABASE_USERNAME_SBX}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_SBX}}
-      DATABASE_NAME: ${{secrets.DATABASE_NAME_SBX}}
+      DATABASE_NAME: ${{vars.DATABASE_NAME_SBX}}
 
-      DATABASE_DATA_SOURCE: ${{ secrets.DATABASE_DATA_SOURCE_SBX }}
-      DATABASE_API_URL: ${{ secrets.DATABASE_API_URL }}
+      DATABASE_DATA_SOURCE: ${{ vars.DATABASE_DATA_SOURCE_SBX }}
+      DATABASE_API_URL: ${{ vars.DATABASE_API_URL }}
       DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_SBX }}
 
-      NAVEGA_API_URL: ${{secrets.NAVEGA_API_URL_SBX}}
-      NAVEGA_PORTAL_API_URL: ${{secrets.NAVEGA_PORTAL_API_URL_SBX}}
+      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_SBX}}
+      NAVEGA_PORTAL_API_URL: ${{vars.NAVEGA_PORTAL_API_URL_SBX}}
 
-      SIMULATION_API_URL: ${{secrets.SIMULATION_API_URL_DEV}}
+      SIMULATION_API_URL: ${{vars.SIMULATION_API_URL_DEV}}
 
-      SUBNET_APP_A: ${{secrets.SUBNET_APP_A_SBX}}
-      SUBNET_APP_B: ${{secrets.SUBNET_APP_B_SBX}}
-      SECURITY_GROUP_API: ${{secrets.SECURITY_GROUP_API_SBX}}
+      SUBNET_APP_A: ${{vars.SUBNET_APP_A_SBX}}
+      SUBNET_APP_B: ${{vars.SUBNET_APP_B_SBX}}
+      SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_SBX}}
 
-      LOG_LEVEL: ${{secrets.LOG_LEVEL_SBX}}
+      LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
-      ENV: ${{secrets.ENV_SBX}}
+      ENV: ${{vars.ENV_SBX}}
 
-      EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER_DEV }}
-      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME_DEV }}
+      EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
+      EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
 
     steps:
@@ -92,9 +92,9 @@ jobs:
       - name: Setup Jfrog
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm config set registry ${{secrets.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{secrets.ARTIFACTORY_EMAIL}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
 
       - name: Install & Build Libs
@@ -123,8 +123,8 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           export VERSION=$(node -p "require('./package.json').version")
-          export AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_SBX}}
+          export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_SBX}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
-          export AWS_REGION=${{secrets.AWS_REGION_SBX}}
+          export AWS_REGION=${{vars.AWS_REGION_SBX}}
           npm i -g serverless@3
-          sls deploy --stage ${{secrets.ENV_SBX}} --region $AWS_REGION
+          sls deploy --stage ${{vars.ENV_SBX}} --region $AWS_REGION
