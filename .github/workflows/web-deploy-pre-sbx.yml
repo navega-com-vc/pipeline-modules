@@ -47,4 +47,4 @@ jobs:
       - name: Pre-Sandbox Deploy AWS
         run: |
           aws s3 sync dist/ s3://pre-sbx.navega.com.vc --delete
-          aws cloudfront create-invalidation --distribution-id=TBD --paths "/*"
+          aws cloudfront create-invalidation --distribution-id=E2YWP3OFF57QON --paths "/*"
