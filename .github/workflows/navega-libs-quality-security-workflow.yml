@@ -45,6 +45,8 @@ env:
 
   ENV: ${{ vars.ENV_DEV }}
 
+  PROXY_CONNECTOR: ${{secrets.PROXY_CONNECTOR_DEV}}
+
 jobs:
   install:
     if: ${{ !contains(fromJson('["dev", "stg", "pre-sbx", "sbx", "main"]'), github.head_ref) }}

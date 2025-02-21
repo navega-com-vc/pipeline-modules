@@ -49,6 +49,8 @@ jobs:
       ENV: ${{ vars.ENV_DEV }}
       DD_ENV: ${{ vars.ENV_DEV }}
 
+      PROXY_CONNECTOR: ${{secrets.PROXY_CONNECTOR_DEV}}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
