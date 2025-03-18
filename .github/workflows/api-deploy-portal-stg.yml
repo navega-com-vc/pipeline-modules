@@ -54,6 +54,8 @@ jobs:
       EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
 
+      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_STG }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
