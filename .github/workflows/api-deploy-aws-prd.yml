@@ -123,4 +123,5 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_PRD}}
           export AWS_REGION=${{vars.AWS_REGION_PRD}}
           npm i -g serverless@3
+          export NODE_OPTIONS="--no-experimental-detect-module --no-experimental-require-module"
           sls deploy --stage ${{vars.ENV_PRD}} --region $AWS_REGION
