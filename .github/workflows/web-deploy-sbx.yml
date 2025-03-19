@@ -10,7 +10,7 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    
+
     env:
       API_URL: ${{vars.NAVEGA_API_URL_SBX}}
       DATADOG_CLIENT_TOKEN: ${{secrets.DATADOG_CLIENT_TOKEN_SBX}}
@@ -25,6 +25,11 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17.0
+
       - name: Install
         run: |
           npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
@@ -36,7 +41,7 @@ jobs:
       - name: Build
         run: |
           yarn build
-      
+
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:

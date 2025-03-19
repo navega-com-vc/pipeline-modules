@@ -10,7 +10,7 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    
+
     env:
       API_URL: ${{vars.NAVEGA_API_URL_STG}}
       DATADOG_CLIENT_TOKEN: ${{secrets.DATADOG_CLIENT_TOKEN_STG}}
@@ -18,12 +18,17 @@ jobs:
       DATADOG_SAMPLE_RATE: ${{vars.DATADOG_SAMPLE_RATE_STG}}
       DATADOG_SERVICE: navega-web-stg
       DATADOG_ENV: stg
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17.0
 
       - name: Install
         run: |
@@ -36,7 +41,7 @@ jobs:
       - name: Build
         run: |
           yarn build
-            
+
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
