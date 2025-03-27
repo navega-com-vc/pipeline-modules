@@ -1,0 +1,43 @@
+name: IA Code Review Reusable
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+on:
+  workflow_call:
+
+jobs:
+  Review-Amazon-Bedrock:
+    concurrency:
+      group: ${{ github.repository }}-${{ github.event.number || github.head_ref || github.sha }}-ia-code-review
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AI_PR_ROLE_TO_ASSUME }}
+          role-session-name: gha-session
+          aws-region: us-east-1
+
+      - name: PR review
+        uses: tmokmss/bedrock-pr-reviewer@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SYSTEM_MESSAGE: ${{ vars.AI_PR_SYSTEM_MESSAGE }}
+          SUMMARIZE_MESSAGE: ${{ vars.AI_PR_SUMMARIZE_MESSAGE }}
+        with:
+          debug: ${{ vars.AI_PR_DEBUG }}
+          review_simple_changes: ${{ vars.AI_PR_REVIEW_SIMPLE_CHANGES }}
+          review_comment_lgtm: ${{ vars.AI_PR_REVIEW_COMMENT_LGTM }}
+          bedrock_model_temperature: ${{ vars.AI_PR_BEDROCK_MODEL_TEMPERATURE }}
+          bedrock_heavy_model: ${{ vars.AI_PR_BEDROCK_MODEL }}
+          bedrock_light_model: ${{ vars.AI_PR_BEDROCK_MODEL }}
+          bedrock_retries: 10
+          language: pt-BR
+          system_message: |
+            ${{ env.SYSTEM_MESSAGE }}
+          summarize: |
+            ${{ env.SUMMARIZE_MESSAGE }}
