@@ -91,6 +91,24 @@ jobs:
         run: |
           yarn install
 
+      # Verifica se houve alteração na lib navega-portal-common
+      - name: Check if libs were modified
+        id: check_libs
+        run: |
+          git fetch origin ${{ github.base_ref || 'main' }}
+          if git diff --name-only origin/${{ github.base_ref || 'main' }} | grep '^libs/'; then
+            echo "libs_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "libs_changed=false" >> $GITHUB_OUTPUT
+          fi
+      # Se houve alteração na lib navega-portal-common, verifica se o projeto faz build corretamente
+      - name: Build project (if libs changed)
+        if: steps.check_libs.outputs.libs_changed == 'true'
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn build
+
+
       # Comprime o projeto executável
       - name: Compress runnable project
         run: |
