@@ -13,7 +13,14 @@ on:
         required: true
 jobs:
   deploy-lib:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/BETA'
+    if: |
+      github.ref == 'refs/heads/main' ||
+      github.ref == 'refs/heads/prd' ||
+      github.ref == 'refs/heads/BETA' ||
+      github.ref == 'refs/heads/dev' ||
+      github.ref == 'refs/heads/stg' ||
+      github.ref == 'refs/heads/pre-sbx' ||
+      github.ref == 'refs/heads/sbx'
     runs-on: ${{ inputs.RUNS_ON }}
 
     steps:
@@ -35,12 +42,10 @@ jobs:
           npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
           yarn install
-
       - name: Build
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           yarn build
-
       - name: Deploy Lib
         uses: jfrog/setup-jfrog-cli@v4
         env:
@@ -57,7 +62,6 @@ jobs:
           jf rt bce $BUILD_NAME $BUILD_VERSION
           jf npm publish --build-name=$BUILD_NAME --build-number=$BUILD_VERSION
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-
       - name: Tag version
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
