@@ -21,7 +21,7 @@ on:
         required: false
 jobs:
   deploy-prd:
-    if: github.ref == 'refs/heads/prd'
+    if: github.ref == 'refs/heads/main'
     runs-on: ${{ inputs.RUNS_ON }}
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
