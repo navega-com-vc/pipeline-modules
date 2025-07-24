@@ -42,7 +42,12 @@ env:
   KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
   NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_DEV}}
   ENV: ${{ vars.ENV_DEV }}
+  # TODO: Remover o PROXY_CONNECTOR quando não for mais necessário
   PROXY_CONNECTOR: ${{secrets.PROXY_CONNECTOR_DEV}}
+
+  AWS_REGION: ${{vars.AWS_REGION_DEV}}
+  AWS_ACCESS_KEY_ID: ${{vars.AWS_ACCESS_KEY_ID_DEV}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
 
 jobs:
   install:
@@ -227,4 +232,3 @@ jobs:
           version: ${{ github.run_id }}
           scanallnonfataltoplevelmodules: true
           includenewmodules: true
- 
