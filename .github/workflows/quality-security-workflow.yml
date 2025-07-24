@@ -46,6 +46,7 @@ env:
   ENV: ${{ vars.ENV_DEV }}
 
   PROXY_CONNECTOR: ${{secrets.PROXY_CONNECTOR_DEV}}
+  AWS_REGION: ${{vars.AWS_REGION_DEV}}
 
 jobs:
   install:
