@@ -31,8 +31,6 @@ jobs:
           npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
-          echo "//download.jsplumbtoolkit.com/repository/jsplumb/:_authToken=${{secrets.JSPLUMBTOOLKIT}}" >> ~/.npmrc
-          echo "@jsplumbtoolkit:registry=https://download.jsplumbtoolkit.com/repository/jsplumb/" >> ~/.npmrc
           yarn install
 
       - name: Build
