@@ -59,6 +59,7 @@ jobs:
       LOG_LEVEL: ${{vars.LOG_LEVEL_DEV}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       ENV: ${{vars.ENV_DEV}}
+      WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_DEV}}
 
       AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_DEV}}
       AWS_DYNAMODB_VERSION: ${{vars.AWS_DYNAMODB_VERSION_DEV}}
