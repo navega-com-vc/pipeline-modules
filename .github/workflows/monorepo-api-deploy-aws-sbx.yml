@@ -50,6 +50,7 @@ jobs:
       LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       ENV: ${{vars.ENV_SBX}}
+      WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_SBX}}
 
       AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_SBX}}
       AWS_DYNAMODB_VERSION: ${{vars.AWS_DYNAMODB_VERSION_SBX}}
