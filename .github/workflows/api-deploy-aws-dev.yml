@@ -58,7 +58,7 @@ jobs:
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_DEV}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
-      DD_ENABLED: ${{vars.DD_ENABLED_DEV}}
+      DD_ENABLED: ''
       ENV: ${{vars.ENV_DEV}}
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_DEV}}
 
