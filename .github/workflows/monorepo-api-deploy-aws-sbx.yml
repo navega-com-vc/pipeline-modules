@@ -49,6 +49,7 @@ jobs:
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_ENABLED: ${{vars.DD_ENABLED_SBX}}
       ENV: ${{vars.ENV_SBX}}
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_SBX}}
 
