@@ -57,6 +57,7 @@ jobs:
       LOG_LEVEL: ${{vars.LOG_LEVEL_PRD}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       DD_ENABLED: ${{vars.DD_ENABLED_PRD}}
+      AWS_LAMBDA_EXEC_WRAPPER: '/opt/datadog_wrapper'
       ENV: ${{vars.ENV_PRD}}
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_PRD}}
 

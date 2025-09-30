@@ -51,6 +51,7 @@ jobs:
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       DD_ENABLED: ${{vars.DD_ENABLED_PRD}}
       ENV: ${{vars.ENV_PRD}}
+      AWS_LAMBDA_EXEC_WRAPPER: '/opt/datadog_wrapper'
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_PRD}}
 
       AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_PRD}}
