@@ -48,7 +48,8 @@ jobs:
       NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_PRE_SBX}}
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
-      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_API_KEY: ''
+      DD_ENABLED: ${{vars.DD_ENABLED_PRE_SBX}}
       ENV: ${{vars.ENV_PRE_SBX}}
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_PRE_SBX}}
 
