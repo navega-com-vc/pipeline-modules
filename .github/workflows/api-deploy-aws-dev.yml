@@ -57,8 +57,8 @@ jobs:
       NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_DEV}}
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_DEV}}
-      DD_API_KEY: ${{secrets.DD_API_KEY}}
-      DD_ENABLED: ''
+      DD_API_KEY: ''
+      DD_ENABLED: ${{vars.DD_ENABLED_DEV}}
       ENV: ${{vars.ENV_DEV}}
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_DEV}}
 
