@@ -164,6 +164,10 @@ jobs:
 
   runSAST:
     runs-on: ubuntu-latest
+    if: contains('
+      refs/heads/dev
+      refs/heads/stg
+      ', github.ref)
     needs: install
     steps:
       - name: Download security analysis package
@@ -187,9 +191,6 @@ jobs:
     if: contains('
       refs/heads/dev
       refs/heads/stg
-      refs/heads/pre-sbx
-      refs/heads/sbx
-      refs/heads/main
       ', github.ref)
     needs: install
     steps:
