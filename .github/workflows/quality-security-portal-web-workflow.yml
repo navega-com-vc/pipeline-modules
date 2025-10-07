@@ -183,6 +183,10 @@ jobs:
 
   runSAST:
     runs-on: ubuntu-latest
+    if: contains('
+      refs/heads/dev
+      refs/heads/stg
+      ', github.ref)
     needs: install
     steps:
       - name: Download security analysis package
@@ -206,9 +210,6 @@ jobs:
     if: contains('
       refs/heads/dev
       refs/heads/stg
-      refs/heads/pre-sbx
-      refs/heads/sbx
-      refs/heads/main
       ', github.ref)
     needs: install
     steps:
@@ -238,21 +239,21 @@ jobs:
           scanallnonfataltoplevelmodules: true
           includenewmodules: true
 
-      - name: Upload and Run SAST in Production
-        continue-on-error: true
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
-        env:
-          VeracodeID: ${{ vars.VERACODE_APP_ID }}
-          VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
-          AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
-        with:
-          vid: '$VeracodeID'
-          vkey: '$VeracodeKey'
-          criticality: 'VeryHigh'
-          appname: '$AppName'
-          filepath: 'securityAnalysis.zip'
-          deleteIncompleteScan: false
-          version: ${{ github.run_id }}
-          scanallnonfataltoplevelmodules: true
-          includenewmodules: true
+      # - name: Upload and Run SAST in Production
+      #   continue-on-error: true
+      #   if: ${{ github.ref == 'refs/heads/main' }}
+      #   uses: veracode/veracode-uploadandscan-action@master # Faz a analise da Veracode
+      #   env:
+      #     VeracodeID: ${{ vars.VERACODE_APP_ID }}
+      #     VeracodeKey: ${{ secrets.VERACODE_APP_KEY }}
+      #     AppName: ${{ github.repository }}/${{ inputs.WORKING_DIRECTORY }}
+      #   with:
+      #     vid: '$VeracodeID'
+      #     vkey: '$VeracodeKey'
+      #     criticality: 'VeryHigh'
+      #     appname: '$AppName'
+      #     filepath: 'securityAnalysis.zip'
+      #     deleteIncompleteScan: false
+      #     version: ${{ github.run_id }}
+      #     scanallnonfataltoplevelmodules: true
+      #     includenewmodules: true
