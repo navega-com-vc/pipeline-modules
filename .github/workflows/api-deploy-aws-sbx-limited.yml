@@ -126,7 +126,7 @@ jobs:
       - name: Sandbox Deploy
         env:
           SLS_DEBUG: '*'
-          NODE_OPTIONS: '--max_old_space_size=3072'
+          NODE_OPTIONS: '--max_old_space_size=2048'
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           export VERSION=$(node -p "require('./package.json').version")
