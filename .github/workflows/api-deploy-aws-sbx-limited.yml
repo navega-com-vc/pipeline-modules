@@ -1,0 +1,137 @@
+name: api-deploy-sbx
+
+on:
+  workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
+      AWS_REGION:
+        type: string
+        required: false
+    secrets:
+      ARTIFACTORY_AUTH:
+        required: true
+      AWS_SECRET_ACCESS_KEY_SBX:
+        required: true
+      DATABASE_PASSWORD_SBX:
+        required: false
+      DD_API_KEY:
+        required: true
+      KEYCLOAK_PASSWORD_ADMIN_SBX:
+        required: false
+      EMAIL_PASSWORD_DEV:
+        required: false
+      MFA_KEY_SBX:
+        required: false
+      NAVEGA_API_REPORT_PASSWORD:
+        required: false
+jobs:
+  deploy-sbx:
+    if: github.ref == 'refs/heads/sbx'
+    runs-on: ${{ inputs.RUNS_ON }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      DATABASE_HOST: ${{vars.DATABASE_HOST_SBX}}
+      DATABASE_USERNAME: ${{vars.DATABASE_USERNAME_SBX}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_SBX}}
+      DATABASE_NAME: ${{vars.DATABASE_NAME_SBX}}
+
+      DATABASE_DATA_SOURCE: ${{ vars.DATABASE_DATA_SOURCE_SBX }}
+      DATABASE_API_URL: ${{ vars.DATABASE_API_URL }}
+      DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_SBX }}
+
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_SBX}}
+      KEYCLOAK_USERNAME_ADMIN: ${{vars.KEYCLOAK_USERNAME_ADMIN_SBX}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_SBX}}
+
+      SUBNET_APP_A: ${{vars.SUBNET_APP_A_SBX}}
+      SUBNET_APP_B: ${{vars.SUBNET_APP_B_SBX}}
+      SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_SBX}}
+
+      LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
+      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_ENABLED: ${{vars.DD_ENABLED_SBX}}
+      ENV: ${{vars.ENV_SBX}}
+      AWS_LAMBDA_EXEC_WRAPPER: '/opt/datadog_wrapper'
+      WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_SBX}}
+
+      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_SBX}}
+
+      AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_SBX}}
+      AWS_DYNAMODB_VERSION: ${{vars.AWS_DYNAMODB_VERSION_SBX}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{vars.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_SBX}}
+
+      EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
+      EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
+
+      EMAIL_REDIRECT_ADDRESS: ${{ secrets.EMAIL_REDIRECT_ADDRESS }}
+
+      USE_WRITE_COMMAND_WITH_QUEUE: ${{ vars.USE_WRITE_COMMAND_WITH_QUEUE_SBX }}
+      WRITE_COMMAND_MESSAGE_BATCH_SIZE: ${{ vars.WRITE_COMMAND_MESSAGE_BATCH_SIZE_SBX }}
+
+      USE_ATLAS_API_REQUEST: ${{ vars.USE_ATLAS_API_REQUEST }}
+
+      MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ vars.MAX_OUTPUT_DATA_SIZE_IN_MB }}
+      RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ vars.RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB }}
+      TIMEOUT_TASK_EXECUTION_IN_SECONDS: ${{ vars.TIMEOUT_TASK_EXECUTION_IN_SECONDS}}
+      FREE_MEMORY_LIMIT_IN_MB: ${{ vars.FREE_MEMORY_LIMIT_IN_MB}}
+
+      CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_SBX }}
+      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_SBX }}
+
+      MFA_KEY: ${{ secrets.MFA_KEY_SBX }}
+
+      NAVEGA_API_REPORT_USERNAME: ${{ vars.NAVEGA_API_REPORT_USERNAME }}
+      NAVEGA_API_REPORT_PASSWORD: ${{ secrets.NAVEGA_API_REPORT_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17.0
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          
+          # Install dependencies in the root directory
+          if [ -f "package.json" ]; then
+            yarn install
+          fi
+
+          # Install dependencies in subdirectories of 'layer'
+          if [ -d "layer" ]; then
+            for dir in layer/*/; do
+              if [ -f "$dir/package.json" ]; then
+                (cd "$dir" && yarn install)
+              fi
+            done
+          fi
+
+      - name: Sandbox Deploy
+        env:
+          SLS_DEBUG: '*'
+          NODE_OPTIONS: '--max_old_space_size=3072'
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          export VERSION=$(node -p "require('./package.json').version")
+          export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_SBX}}
+          export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
+          export AWS_REGION=${{ inputs.AWS_REGION || vars.AWS_REGION_SBX }}
+          npm i -g serverless@3
+          sls deploy --stage ${{vars.ENV_SBX}} --region $AWS_REGION
