@@ -124,9 +124,7 @@ jobs:
           fi
 
       - name: Sandbox Deploy
-        env:
-          SLS_DEBUG: '*'
-          NODE_OPTIONS: '--max_old_space_size=2048'
+        env: { NODE_OPTIONS: '--max-old-space-size=4096' }
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           export VERSION=$(node -p "require('./package.json').version")
@@ -134,4 +132,4 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
           export AWS_REGION=${{ inputs.AWS_REGION || vars.AWS_REGION_SBX }}
           npm i -g serverless@3
-          sls deploy --stage ${{vars.ENV_SBX}} --region $AWS_REGION
+          NODE_OPTIONS=--max-old-space-size=4096 sls deploy --stage ${{vars.ENV_SBX}} --region $AWS_REGION
