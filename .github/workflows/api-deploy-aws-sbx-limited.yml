@@ -124,7 +124,9 @@ jobs:
           fi
 
       - name: Sandbox Deploy
-        env: { NODE_OPTIONS: '--max-old-space-size=4096' }
+        env: 
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          UV_THREADPOOL_SIZE: 4
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           export VERSION=$(node -p "require('./package.json').version")
