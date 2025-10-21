@@ -99,7 +99,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.19.5
+          node-version: 20.17
 
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -130,5 +130,5 @@ jobs:
           export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_SBX}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
           export AWS_REGION=${{ inputs.AWS_REGION || vars.AWS_REGION_SBX }}
-          npm i -g serverless@3.40.0
+          npm i -g serverless@3
           sls deploy --stage ${{vars.ENV_SBX}} --region $AWS_REGION
