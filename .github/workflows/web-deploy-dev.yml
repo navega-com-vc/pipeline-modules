@@ -13,6 +13,7 @@ jobs:
 
     env:
       API_URL: ${{vars.NAVEGA_API_URL_DEV}}
+      LOAN_API_URL: ${{vars.LOAN_API_URL_DEV}}
 
     steps:
       - name: Checkout
@@ -35,6 +36,7 @@ jobs:
 
       - name: Build
         run: |
+          export NODE_OPTIONS="--max_old_space_size=4096"
           yarn dev
 
       - name: Setup AWS Credentials
