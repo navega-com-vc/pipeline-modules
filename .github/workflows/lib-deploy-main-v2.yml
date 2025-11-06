@@ -1,0 +1,58 @@
+name: lib-deploy-main
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-lib:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/BETA'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17
+
+      - name: Install
+        run: |
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          yarn install
+
+      - name: Build
+        run: |
+          yarn build
+
+      - name: Deploy Lib
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+      - run: |
+          jf --v
+          jf c add f3capital --artifactory-url=${{vars.ARTIFACTORY_URL}} --user=${{vars.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
+          jf c show
+          jf npmc --server-id-resolve=f3capital --repo-resolve=${{vars.ARTIFACTORY_NPM_REPOSITORY}} --server-id-deploy=f3capital --repo-deploy=${{vars.ARTIFACTORY_NPM_REPOSITORY}}
+          export BUILD_NAME=$(node -p "require('./package.json').name")
+          export BUILD_VERSION=$(node -p "require('./package.json').version")
+          # Publica o pacote no Artifactory + associa build-info
+          jf rt npm-publish --build-name="$BUILD_NAME" --build-number="$BUILD_VERSION"
+
+          # Publica o build-info no JFrog
+          jf rt build-publish "$BUILD_NAME" "$BUILD_VERSION"
+
+      - name: Tag version
+        run: |
+          git config --global user.email "ti@f3capital.com.br"
+          git config --global user.name "TI F3 Capital"
+          export BUILD_VERSION=$(node -p "require('./package.json').version")
+          git tag -a $BUILD_VERSION -m "Version $BUILD_VERSION"
+          git push origin $BUILD_VERSION
