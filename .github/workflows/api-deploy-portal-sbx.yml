@@ -97,6 +97,16 @@ jobs:
             done
           fi
 
+      - name: Run migrations
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          if [ -f "migrate-mongo-config.js" ]; then
+            echo "migrate-mongo-config.js found — running migrations..."
+            yarn navega-migrate-cli up ${{ vars.ENV_SBX }}
+          else
+            echo "No migrate-mongo-config.js file found — skipping migrations."
+          fi
+
       - name: Sandbox Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
