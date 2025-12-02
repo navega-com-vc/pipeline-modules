@@ -1,0 +1,146 @@
+name: api-deploy-prd
+
+on:
+  workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
+      AWS_REGION:
+        type: string
+        required: false
+    secrets:
+      ARTIFACTORY_AUTH:
+        required: true
+      AWS_SECRET_ACCESS_KEY_PRD:
+        required: true
+      DATABASE_PASSWORD_PRD:
+        required: false
+      DD_API_KEY:
+        required: true
+      KEYCLOAK_PASSWORD_ADMIN_PRD:
+        required: false
+      EMAIL_PASSWORD_PRD:
+        required: false
+      MFA_KEY_PRD:
+        required: false
+      NAVEGA_API_REPORT_PASSWORD:
+        required: false
+jobs:
+  deploy-prd:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ inputs.RUNS_ON }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      DATABASE_HOST: ${{vars.DATABASE_HOST_PRD}}
+      DATABASE_USERNAME: ${{vars.DATABASE_USERNAME_PRD}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_PRD}}
+      DATABASE_NAME: ${{vars.DATABASE_NAME_PRD}}
+
+      DATABASE_DATA_SOURCE: ${{ vars.DATABASE_DATA_SOURCE_PRD }}
+      DATABASE_API_URL: ${{ vars.DATABASE_API_URL }}
+      DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_PRD }}
+
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_PRD}}
+      KEYCLOAK_USERNAME_ADMIN: ${{vars.KEYCLOAK_USERNAME_ADMIN_PRD}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_PRD}}
+
+      SUBNET_APP_A: ${{vars.SUBNET_APP_A_PRD}}
+      SUBNET_APP_B: ${{vars.SUBNET_APP_B_PRD}}
+      SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_PRD}}
+
+      LOG_LEVEL: ${{vars.LOG_LEVEL_PRD}}
+      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_ENABLED: ${{vars.DD_ENABLED_PRD}}
+      AWS_LAMBDA_EXEC_WRAPPER: '/opt/datadog_wrapper'
+      ENV: ${{vars.ENV_PRD}}
+      WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_PRD}}
+
+      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_PRD}}
+
+      AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_PRD}}
+      AWS_DYNAMODB_VERSION: ${{vars.AWS_DYNAMODB_VERSION_PRD}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{vars.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_PRD}}
+
+      EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_PRD }}
+      EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_PRD }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_PRD }}
+
+      EMAIL_REDIRECT_ADDRESS: ${{ secrets.EMAIL_REDIRECT_ADDRESS }}
+
+      USE_WRITE_COMMAND_WITH_QUEUE: ${{ vars.USE_WRITE_COMMAND_WITH_QUEUE_PRD }}
+      WRITE_COMMAND_MESSAGE_BATCH_SIZE: ${{ vars.WRITE_COMMAND_MESSAGE_BATCH_SIZE_PRD }}
+
+      USE_ATLAS_API_REQUEST: ${{ vars.USE_ATLAS_API_REQUEST }}
+
+      MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ vars.MAX_OUTPUT_DATA_SIZE_IN_MB }}
+      RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB: ${{ vars.RULES_API_MAX_OUTPUT_DATA_SIZE_IN_MB }}
+      TIMEOUT_TASK_EXECUTION_IN_SECONDS: ${{ vars.TIMEOUT_TASK_EXECUTION_IN_SECONDS}}
+      FREE_MEMORY_LIMIT_IN_MB: ${{ vars.FREE_MEMORY_LIMIT_IN_MB}}
+
+      CF_DISTRIBUTION_NAVEGA: ${{ vars.CF_DISTRIBUTION_NAVEGA_PRD }}
+      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_PRD }}
+
+      MFA_KEY: ${{ secrets.MFA_KEY_PRD }}
+
+      NAVEGA_API_REPORT_USERNAME: ${{ vars.NAVEGA_API_REPORT_USERNAME }}
+      NAVEGA_API_REPORT_PASSWORD: ${{ secrets.NAVEGA_API_REPORT_PASSWORD }}
+
+      SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_ERP }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+          
+          # Install dependencies in the root directory
+          if [ -f "package.json" ]; then
+            yarn install
+          fi
+
+          # Install dependencies in subdirectories of 'layer'
+          if [ -d "layer" ]; then
+            for dir in layer/*/; do
+              if [ -f "$dir/package.json" ]; then
+                (cd "$dir" && yarn install)
+              fi
+            done
+          fi
+      
+      - name: Run migrations
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          if [ -f "migrate-mongo-config.js" ]; then
+            echo "migrate-mongo-config.js found — running migrations..."
+            yarn navega-migrate-cli up ${{ vars.ENV_PRD }}
+          else
+            echo "No migrate-mongo-config.js file found — skipping migrations."
+          fi
+
+      - name: Production Deploy
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          export VERSION=$(node -p "require('./package.json').version")
+          export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_PRD}}
+          export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_PRD}}
+          export AWS_REGION=${{ inputs.AWS_REGION || vars.AWS_REGION_PRD }}
+          npm i -g serverless
+          sls deploy --stage ${{vars.ENV_PRD}} --region $AWS_REGION
