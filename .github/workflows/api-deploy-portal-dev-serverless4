@@ -1,0 +1,118 @@
+name: api-deploy-portal-dev-serverless4
+
+on:
+  workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
+    secrets:
+      ARTIFACTORY_AUTH:
+        required: true
+      AWS_SECRET_ACCESS_KEY_DEV:
+        required: true
+      DATABASE_PASSWORD_DEV:
+        required: false
+      DD_API_KEY:
+        required: true
+      DATABASE_API_KEY:
+        required: false
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ${{ inputs.RUNS_ON }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      DATABASE_HOST: ${{vars.DATABASE_HOST_DEV}}
+      DATABASE_USERNAME: ${{vars.DATABASE_USERNAME_DEV}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+      DATABASE_NAME: ${{vars.DATABASE_NAME_DEV}}
+
+      DATABASE_DATA_SOURCE: ${{ vars.DATABASE_DATA_SOURCE_DEV }}
+      DATABASE_API_URL: ${{ vars.DATABASE_API_URL }}
+      DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_DEV }}
+
+      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_DEV}}
+      NAVEGA_PORTAL_API_URL: ${{vars.NAVEGA_PORTAL_API_URL_DEV}}
+
+      SIMULATION_API_URL: ${{vars.SIMULATION_API_URL_DEV}}
+
+      SUBNET_APP_A: ${{vars.SUBNET_APP_A_DEV}}
+      SUBNET_APP_B: ${{vars.SUBNET_APP_B_DEV}}
+      SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_DEV}}
+
+      LOG_LEVEL: ${{vars.LOG_LEVEL_DEV}}
+      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      ENV: ${{vars.ENV_DEV}}
+
+      EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
+      EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
+
+      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_DEV }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17
+
+      - name: Setup Jfrog
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
+          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          echo "always-auth=true" >> ~/.npmrc
+
+      - name: Install & Build Libs
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          sh ../build-libs.sh
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          # Install dependencies in the root directory
+          if [ -f "package.json" ]; then
+            yarn install
+          fi
+
+          # Install dependencies in subdirectories of 'layer'
+          if [ -d "layer" ]; then
+            for dir in layer/*/; do
+              if [ -f "$dir/package.json" ]; then
+                (cd "$dir" && yarn install)
+              fi
+            done
+          fi
+
+      - name: Run migrations
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          if [ -f "migrate-mongo-config.js" ]; then
+            echo "migrate-mongo-config.js found — running migrations..."
+            yarn navega-migrate-cli up ${{ vars.ENV_DEV }}
+          else
+            echo "No migrate-mongo-config.js file found — skipping migrations."
+          fi
+
+      - name: Development Deploy
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          export VERSION=$(node -p "require('./package.json').version")
+          export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_DEV}}
+          export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
+          export AWS_REGION=${{vars.AWS_REGION_DEV}}
+          npm i -g serverless@4
+          sls deploy --stage ${{vars.ENV_DEV}} --region $AWS_REGION
