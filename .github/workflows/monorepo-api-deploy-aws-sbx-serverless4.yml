@@ -1,4 +1,4 @@
-name: api-deploy-portal-sbx-serverless4
+name: api-deploy-sbx
 
 on:
   workflow_call:
@@ -17,7 +17,7 @@ on:
         required: false
       DD_API_KEY:
         required: true
-      DATABASE_API_KEY:
+      KEYCLOAK_PASSWORD_ADMIN_SBX:
         required: false
 jobs:
   deploy-sbx:
@@ -37,26 +37,32 @@ jobs:
       DATABASE_API_URL: ${{ vars.DATABASE_API_URL }}
       DATABASE_API_KEY: ${{ secrets.DATABASE_API_KEY_SBX }}
 
-      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_SBX}}
-      NAVEGA_PORTAL_API_URL: ${{vars.NAVEGA_PORTAL_API_URL_SBX}}
-
-      SIMULATION_API_URL: ${{vars.SIMULATION_API_URL_DEV}}
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_SBX}}
+      KEYCLOAK_USERNAME_ADMIN: ${{vars.KEYCLOAK_USERNAME_ADMIN_SBX}}
+      KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_SBX}}
 
       SUBNET_APP_A: ${{vars.SUBNET_APP_A_SBX}}
       SUBNET_APP_B: ${{vars.SUBNET_APP_B_SBX}}
       SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_SBX}}
 
+      NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_SBX}}
+
       LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
       DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_ENABLED: ${{vars.DD_ENABLED_SBX}}
       ENV: ${{vars.ENV_SBX}}
+      AWS_LAMBDA_EXEC_WRAPPER: '/opt/datadog_wrapper'
+      WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_SBX}}
+
+      AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_SBX}}
+      AWS_DYNAMODB_VERSION: ${{vars.AWS_DYNAMODB_VERSION_SBX}}
+      AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE: ${{vars.AWS_DYNAMODB_MIRRORED_DOCUMENTS_TABLE_SBX}}
 
       EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
       EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
 
-      INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_SBX }}
-
-      SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_PORTAL }}
+      SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_ERP }}
 
     steps:
       - name: Checkout
@@ -69,35 +75,17 @@ jobs:
         with:
           node-version: 24
 
-      - name: Setup Jfrog
+      - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          cd ..
           npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
           npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
           npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
           echo "always-auth=true" >> ~/.npmrc
-
-      - name: Install & Build Libs
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          sh ../build-libs.sh
-
-      - name: Install
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          # Install dependencies in the root directory
-          if [ -f "package.json" ]; then
-            yarn install
-          fi
-
-          # Install dependencies in subdirectories of 'layer'
-          if [ -d "layer" ]; then
-            for dir in layer/*/; do
-              if [ -f "$dir/package.json" ]; then
-                (cd "$dir" && yarn install)
-              fi
-            done
-          fi
+          cp ~/.npmrc ./.npmrc
+          yarn install
+          yarn build
 
       - name: Run migrations
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -117,4 +105,4 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_SBX}}
           export AWS_REGION=${{vars.AWS_REGION_SBX}}
           npm i -g serverless
-          sls deploy --stage ${{vars.ENV_SBX}} --region $AWS_REGION
+          sls deploy --force --stage ${{vars.ENV_SBX}} --region $AWS_REGION
