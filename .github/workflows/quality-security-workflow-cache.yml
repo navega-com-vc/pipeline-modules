@@ -71,7 +71,6 @@ jobs:
         with:
           node-version: 24
           cache: 'yarn'
-          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/yarn.lock
 
       # Comprime os arquivos do repositório para análise de segurança
       - name: Compress files for security analysis
