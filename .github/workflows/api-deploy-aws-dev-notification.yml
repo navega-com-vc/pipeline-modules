@@ -137,6 +137,8 @@ jobs:
 
       - name: Development Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
         run: |
           set -o pipefail
           export VERSION=$(node -p "require('./package.json').version")
@@ -151,12 +153,10 @@ jobs:
             COUNT=$(echo "$OUTPUT" | grep -Eo "You have [0-9]+ resources" | head -n 1 | grep -Eo "[0-9]+")
 
             if [ -n "${TEAMS_WEBHOOK_URL:-}" ]; then
-              payload=$(cat <<EOF
-              {
-                "text": "⚠️ *Serverless CloudFormation Warning*\n\n*Repo:* ${GITHUB_REPOSITORY}\n*Stage:* ${STAGE}\n*Resources:* ${COUNT}\n\nRun: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-              }
-              EOF
-              )
-              curl -sS -H "Content-Type: application/json" -d "$payload" "$TEAMS_WEBHOOK_URL"
+              RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+              echo "sending warning to Teams webhook..."
+              curl -sS -H "Content-Type: application/json" \
+                -d "{\"text\":\"⚠️ Serverless CloudFormation Warning\\n\\nRepo: ${GITHUB_REPOSITORY}\\nStage: ${STAGE}\\nResources: ${COUNT}\\n\\nRun: ${RUN_URL}\"}" \
+                "$TEAMS_WEBHOOK_URL"
             fi
           fi
