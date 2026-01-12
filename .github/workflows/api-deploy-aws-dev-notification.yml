@@ -146,8 +146,8 @@ jobs:
           sls deploy --force --stage ${{vars.ENV_DEV}} --region $AWS_REGION 2>&1 | tee deploy.log
 
       - name: Upload deploy log
-          if: always()
-          uses: actions/upload-artifact@v4
-          with:
-            name: deploy-log-${{ env.STAGE }}
-            path: deploy.log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-log-${{ env.STAGE }}
+          path: deploy.log
