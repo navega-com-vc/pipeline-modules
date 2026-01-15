@@ -52,10 +52,9 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
 
 jobs:
-  quality:
+  install:
     if: ${{ !contains(fromJson('["dev", "stg", "pre-sbx", "sbx", "main"]'), github.head_ref) }}
     runs-on: ${{ inputs.RUNS_ON }}
-    container: f3capital/aquario:latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
