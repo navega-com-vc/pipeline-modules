@@ -52,7 +52,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
 
 jobs:
-  install:
+  quality:
     if: ${{ !contains(fromJson('["dev", "stg", "pre-sbx", "sbx", "main"]'), github.head_ref) }}
     runs-on: ${{ inputs.RUNS_ON }}
     concurrency:
