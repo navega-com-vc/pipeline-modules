@@ -33,9 +33,13 @@ jobs:
       - name: Setup Core
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          cd ../core
-          yarn
-          yarn build
+          if [ -d ../core ]; then
+            cd ../core
+            yarn
+            yarn build
+          else
+            echo "core directory not found, skipping Setup Core"
+          fi
 
       - name: Setup Lib
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
