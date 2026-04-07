@@ -55,6 +55,7 @@ jobs:
       SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_DEV}}
 
       NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_DEV}}
+      NAVEGA_PORTAL_API_URL: ${{vars.NAVEGA_PORTAL_API_URL_DEV}}
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_DEV}}
       DD_API_KEY: ''
