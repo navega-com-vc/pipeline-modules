@@ -100,10 +100,30 @@ jobs:
         run: |
           yarn build
 
+      # Comprime o projeto executável
+      - name: Compress runnable project
+        run: |
+          touch ${{ github.sha }}.tar.gz
+          tar --exclude=${{ github.sha }}.tar.gz -czf ${{ github.sha }}.tar.gz .
+
+      - name: Upload compressed project
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}
+          path: ${{ github.sha }}.tar.gz
+
   quality:
     runs-on: ${{ inputs.RUNS_ON }}
     needs: install
     steps:
+      - name: Download compressed project
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.sha }}
+
+      - name: Extract project
+        run: tar -xzf ${{ github.sha }}.tar.gz .
+
       - name: Lint
         if: ${{ !inputs.SKIP_LINT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
