@@ -1,0 +1,62 @@
+name: lib-deploy-with-scope-main
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-lib:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/BETA'
+    runs-on: ubuntu-latest
+
+    env:
+      NPM_REGISTRY: https://registry.npmjs.org/
+
+      GIT_F3_USER_EMAIL: ti@f3capital.com.br
+      GIT_F3_USER_NAME: TI F3 Capital
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      
+      - name: Config Registry
+        run: |
+          npm config set registry ${{ env.NPM_REGISTRY }}
+          npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+
+          REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN}}
+
+          echo "always-auth=true" >> ~/.npmrc
+      
+      - name: Install dependencies
+        run: |
+          npm install --omit=dev
+
+      - name: Build Lib
+        run: |
+          npm run build
+
+      - name: Deploy Lib
+        run: |
+          jf --v
+          cat package.json
+          jf c add f3capital --artifactory-url=${{vars.ARTIFACTORY_URL}} --user=${{vars.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false
+          jf c show
+          export BUILD_NAME=$(node -p "require('./package.json').name")
+          export BUILD_VERSION=$(node -p "require('./package.json').version")
+          npm publish --registry=${{vars.ARTIFACTORY_NPM_REGISTRY}}
+
+      - name: Tag version
+        run: |
+          git config --global user.email "${{ env.GIT_F3_USER_EMAIL }}"
+          git config --global user.name "${{ env.GIT_F3_USER_NAME }}"
+          export BUILD_VERSION=$(node -p "require('./package.json').version")
+          git tag -a $BUILD_VERSION -m "Version $BUILD_VERSION"
+          git push origin $BUILD_VERSION
