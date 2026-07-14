@@ -48,7 +48,7 @@ jobs:
       NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_SBX}}
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_SBX}}
-      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_API_KEY: ''
       DD_ENABLED: ${{vars.DD_ENABLED_SBX}}
       ENV: ${{vars.ENV_SBX}}
       AWS_LAMBDA_EXEC_WRAPPER: '/opt/datadog_wrapper'
