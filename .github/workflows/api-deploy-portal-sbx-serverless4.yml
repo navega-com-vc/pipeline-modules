@@ -51,7 +51,6 @@ jobs:
       ENV: ${{vars.ENV_SBX}}
 
       DD_ENABLED: ${{vars.DD_ENABLED_SBX}}
-      AWS_LAMBDA_EXEC_WRAPPER: '/opt/datadog_wrapper'
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_SBX}}
 
       EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
