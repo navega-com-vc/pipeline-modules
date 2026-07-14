@@ -92,12 +92,10 @@ jobs:
           npm config set registry ${{ env.NPM_REGISTRY }}
           npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
 
-          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN}}
 
           echo "always-auth=true" >> ~/.npmrc
-
-          npm config fix
 
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
