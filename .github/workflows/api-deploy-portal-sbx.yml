@@ -52,6 +52,7 @@ jobs:
 
       DD_ENABLED: ${{vars.DD_ENABLED_SBX}}
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_SBX}}
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_SBX}}
 
       EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
       EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
