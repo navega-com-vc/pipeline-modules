@@ -8,6 +8,9 @@ on:
       RUNS_ON:
         type: string
         default: ubuntu-latest
+      INSTALL_LAYER_DEPS:
+        type: boolean
+        default: false
     secrets:
       ARTIFACTORY_AUTH:
         required: true
@@ -86,6 +89,19 @@ jobs:
           cp ~/.npmrc ./.npmrc
           yarn install
           yarn build
+
+      - name: Install layer dependencies
+        if: ${{ inputs.INSTALL_LAYER_DEPS }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          # Install dependencies in subdirectories of 'layer'
+          if [ -d "layer" ]; then
+            for dir in layer/*/; do
+              if [ -f "$dir/package.json" ]; then
+                (cd "$dir" && yarn install)
+              fi
+            done
+          fi
 
       - name: Run migrations
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
