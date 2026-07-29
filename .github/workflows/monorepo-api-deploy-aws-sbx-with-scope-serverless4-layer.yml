@@ -80,6 +80,7 @@ jobs:
       - name: Config Registry
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
+          cd ..
           npm config set registry ${{ env.NPM_REGISTRY }}
           npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
 
