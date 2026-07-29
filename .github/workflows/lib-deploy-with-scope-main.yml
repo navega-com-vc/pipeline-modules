@@ -2,11 +2,20 @@ name: lib-deploy-with-scope-main
 
 on:
   workflow_call:
+    inputs:
+      WORKING_DIRECTORY:
+        type: string
+        required: false
+        default: .
 
 jobs:
   deploy-lib:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/BETA'
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     env:
       NPM_REGISTRY: https://registry.npmjs.org/
