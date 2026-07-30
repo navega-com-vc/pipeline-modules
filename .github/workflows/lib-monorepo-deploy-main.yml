@@ -51,7 +51,7 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: ${{ vars.JF_URL }}
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN_LIBS }}
       - run: |
           cd ${{ inputs.WORKING_DIRECTORY }}
           jf c add f3capital --artifactory-url=${{vars.ARTIFACTORY_URL}} --user=${{vars.ARTIFACTORY_USER}} --password=${{secrets.ARTIFACTORY_PASSWORD}} --interactive=false

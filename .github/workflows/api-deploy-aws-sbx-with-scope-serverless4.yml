@@ -112,7 +112,7 @@ jobs:
           npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
 
           REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
-          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN}}
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN_BACKEND}}
 
           echo "always-auth=true" >> ~/.npmrc
 
