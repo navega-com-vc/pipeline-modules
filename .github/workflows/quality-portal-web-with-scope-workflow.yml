@@ -1,0 +1,154 @@
+name: quality-portal-web-with-scope-workflow
+
+on:
+  workflow_call:
+    inputs:
+      RUNS_ON:
+        type: string
+        default: ubuntu-latest
+      CANCEL_IN_PROGRESS:
+        type: boolean
+        default: true
+      SKIP_LINT:
+        type: boolean
+        default: false
+      SKIP_AUDIT:
+        type: boolean
+        default: false
+      SKIP_TESTS:
+        type: boolean
+        default: false
+      CONTINUE_ON_SONARQUBE_ERROR:
+        type: boolean
+        default: false
+      WORKING_DIRECTORY:
+        type: string
+
+env:
+  DATABASE_NAME: ${{vars.DATABASE_NAME_DEV}}
+  DATABASE_HOST: ${{vars.DATABASE_HOST_DEV}}
+  DATABASE_USERNAME: ${{vars.DATABASE_USERNAME_DEV}}
+  DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD_DEV}}
+
+  KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}
+  KEYCLOAK_PASSWORD_ADMIN: ${{secrets.KEYCLOAK_PASSWORD_ADMIN_DEV}}
+  KEYCLOAK_USERNAME_ADMIN: ${{vars.KEYCLOAK_USERNAME_ADMIN_DEV}}
+  KEYCLOAK_USERNAME_TEST: ${{vars.KEYCLOAK_USERNAME_TEST}}
+  KEYCLOAK_PASSWORD_TEST: ${{secrets.KEYCLOAK_PASSWORD_TEST}}
+  KEYCLOAK_CLIENT_SECRET_TEST: ${{secrets.KEYCLOAK_CLIENT_SECRET_TEST}}
+
+  ENV: ${{ vars.ENV_DEV }}
+
+  # TODO: Remover o PROXY_CONNECTOR quando não for mais necessário
+  PROXY_CONNECTOR: ${{secrets.PROXY_CONNECTOR_DEV}}
+
+  AWS_REGION: ${{vars.AWS_REGION_DEV}}
+  AWS_ACCESS_KEY_ID: ${{vars.AWS_ACCESS_KEY_ID_DEV}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
+
+  NPM_REGISTRY: https://registry.npmjs.org/
+
+jobs:
+  install:
+    if: ${{ !contains(fromJson('["dev", "stg", "pre-sbx", "sbx", "main"]'), github.head_ref) }}
+    runs-on: ${{ inputs.RUNS_ON }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: ${{ inputs.CANCEL_IN_PROGRESS }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17
+
+      - name: Config Registry
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{ env.NPM_REGISTRY }}
+          npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+
+          REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN_FRONTEND}}
+
+          echo "always-auth=true" >> ~/.npmrc
+
+      - name: Install & Build Commons
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          cd ../libs/navega-portal-common && yarn install && yarn build
+
+      - name: Install
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn install
+
+      # Verifica se houve alteração na lib navega-portal-common
+      - name: Check if libs were modified
+        id: check_libs
+        run: |
+          git fetch origin ${{ github.base_ref || 'main' }}
+          if git diff --name-only origin/${{ github.base_ref || 'main' }} | grep '^libs/'; then
+            echo "libs_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "libs_changed=false" >> $GITHUB_OUTPUT
+          fi
+      # Se houve alteração na lib navega-portal-common, verifica se o projeto faz build corretamente
+      - name: Build project (if libs changed)
+        if: steps.check_libs.outputs.libs_changed == 'true'
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn build
+
+      # Comprime o projeto executável
+      - name: Compress runnable project
+        run: |
+          touch ${{ github.sha }}.tar.gz
+          tar --exclude=${{ github.sha }}.tar.gz -czf ${{ github.sha }}.tar.gz .
+
+      - name: Upload compressed project
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}
+          path: ${{ github.sha }}.tar.gz
+
+  quality:
+    runs-on: ${{ inputs.RUNS_ON }}
+    needs: install
+    steps:
+      - name: Download compressed project
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.sha }}
+
+      - name: Extract project
+        run: tar -xzf ${{ github.sha }}.tar.gz .
+
+      - name: Lint
+        if: ${{ !inputs.SKIP_LINT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn lint
+
+      - name: Audit
+        if: ${{ !inputs.SKIP_AUDIT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn audit --groups dependencies
+
+      - name: Tests
+        if: ${{ !inputs.SKIP_TESTS }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn test
+
+      - name: Sonarqube
+        continue-on-error: ${{ inputs.CONTINUE_ON_SONARQUBE_ERROR }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          yarn sonar -Dsonar.host.url=${{ vars.SQ_URL }} -Dsonar.login='${{ secrets.SQ_LOGIN }}' -Dsonar.sourceEncoding=UTF-8
