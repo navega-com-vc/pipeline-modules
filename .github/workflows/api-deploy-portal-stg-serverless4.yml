@@ -48,7 +48,8 @@ jobs:
       SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_STG}}
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_STG}}
-      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_API_KEY: ''
+      DD_ENABLED: ${{vars.DD_ENABLED_STG}}
       ENV: ${{vars.ENV_STG}}
 
       EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
