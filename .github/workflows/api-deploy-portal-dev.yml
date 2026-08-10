@@ -47,32 +47,41 @@ jobs:
       SECURITY_GROUP_API: ${{vars.SECURITY_GROUP_API_DEV}}
 
       LOG_LEVEL: ${{vars.LOG_LEVEL_DEV}}
-      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_API_KEY: ''
+      DD_ENABLED: ${{vars.DD_ENABLED_DEV}}
       ENV: ${{vars.ENV_DEV}}
 
       EMAIL_PROVIDER: ${{ vars.EMAIL_PROVIDER_DEV }}
       EMAIL_USERNAME: ${{ vars.EMAIL_USERNAME_DEV }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD_DEV }}
 
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}
       INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_DEV }}
+
+      SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_PORTAL }}
+
+      NPM_REGISTRY: https://registry.npmjs.org/
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20.17
+          node-version: 24
 
-      - name: Setup Jfrog
+      - name: Config Registry
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
-          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          npm config set registry ${{ env.NPM_REGISTRY }}
+          npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+
+          REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN_BACKEND}}
+
           echo "always-auth=true" >> ~/.npmrc
 
       - name: Install & Build Libs
@@ -114,5 +123,5 @@ jobs:
           export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_DEV}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_DEV}}
           export AWS_REGION=${{vars.AWS_REGION_DEV}}
-          npm i -g serverless@3
+          npm i -g serverless
           sls deploy --stage ${{vars.ENV_DEV}} --region $AWS_REGION

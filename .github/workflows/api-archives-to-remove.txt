@@ -1,0 +1,79 @@
+- api-deploy-aws-dev-serverless4 
+- api-deploy-aws-dev-with-scope-serverless4
+    Alterar nos repositórios para api-deploy-aws-dev
+
+- api-deploy-aws-prd-serverless4
+- api-deploy-aws-prd-with-scope-serverless4
+    Alterar nos repositórios para api-deploy-aws-prd
+
+- api-deploy-aws-pre-sbx-serverless4
+- api-deploy-aws-pre-sbx
+    Ambientes de pre SBX não são mais utilizados, remover
+
+- api-deploy-aws-sbx-serverless4
+- api-deploy-aws-sbx-with-scope-serverless4
+    Alterar nos repositórios para api-deploy-aws-sbx
+
+- api-deploy-aws-stg-serverless4
+- api-deploy-aws-stg-with-scope-serverless4
+    Alterar nos repositórios para api-deploy-aws-stg
+
+- api-deploy-portal-dev-serverless4
+    Alterar nos repositórios para api-deploy-portal-dev
+
+- api-deploy-portal-prd-serverless4
+    Alterar nos repositórios para api-deploy-portal-prd
+
+- api-deploy-portal-pre-sbx
+    Ambientes de pre SBX não são mais utilizados, remover
+
+- api-deploy-portal-sbx-serverless4
+    Alterar nos repositórios para api-deploy-portal-sbx
+
+- api-deploy-portal-stg-serverless4
+    Alterar nos repositórios para api-deploy-portal-stg
+
+- lib-deploy-dev
+    Utilizado apenas em "loans-api-client"
+
+- lib-deploy-main-npm
+    Não utilizado em nenhum repositório, remover
+
+- lib-deploy-main
+    Avaliar se projetos que o referenciam ainda são utilizados
+
+- lib-monorepo-deploy-main
+    Não utilizado em nenhum repositório, remover
+
+- lib-release-notes
+    Não utilizado em nenhum repositório, remover
+
+- monorepo-api-deploy-aws-dev-serverless4-layer
+    Não utilizado em nenhum repositório, remover
+
+- monorepo-api-deploy-aws-dev-serverless4
+    Utilizado unicamente em integrations
+
+- monorepo-api-deploy-aws-dev-with-scope-serverless4-layer
+    Não utilizado em nenhum repositório
+
+- monorepo-api-deploy-aws-dev-with-scope-serverless4
+    Utilizado em collections, podemos migrar para o monorepo-api-deploy-aws-dev
+
+- navega-libs-deploy-main
+    Não utilizado em nenhum repositório, remover
+
+- navega-libs-quality-security-workflow
+    Não utilizado em nenhum repositório, remover
+
+- quality-ai-pr-review-workflow
+    Não utilizado em nenhum repositório, remover
+
+- quality-portal-api-workflow
+    Em uso no navega portal api -> Adicionar @scope na parte que utiliza o JFROG.
+    
+- quality-portal-web-workflow
+    Já utilizado no navega portal web, mudar para utilizar "scope" apenas quando houver atualização no repositório
+
+- quality-security-monorepo-workflow
+
