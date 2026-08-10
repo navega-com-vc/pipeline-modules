@@ -62,6 +62,7 @@ jobs:
       WARMUP_ENABLED: ${{vars.WARMUP_ENABLED_PRD}}
 
       NAVEGA_API_URL: ${{vars.NAVEGA_API_URL_PRD}}
+      NAVEGA_PORTAL_API_URL: ${{vars.NAVEGA_PORTAL_API_URL_PRD}}
 
       AWS_DYNAMODB_REGION: ${{vars.AWS_REGION_PRD}}
       AWS_DYNAMODB_VERSION: ${{vars.AWS_DYNAMODB_VERSION_PRD}}
@@ -90,25 +91,36 @@ jobs:
 
       NAVEGA_API_REPORT_USERNAME: ${{ vars.NAVEGA_API_REPORT_USERNAME }}
       NAVEGA_API_REPORT_PASSWORD: ${{ secrets.NAVEGA_API_REPORT_PASSWORD }}
+
+      SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_ERP }}
+
+      NPM_REGISTRY: https://registry.npmjs.org/
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20.17
+          node-version: 24
+
+      - name: Config Registry
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+        run: |
+          npm config set registry ${{ env.NPM_REGISTRY }}
+          npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+
+          REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN_BACKEND}}
+
+          echo "always-auth=true" >> ~/.npmrc
 
       - name: Install
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        run: |
-          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
-          npm config set -- '//f3capital.jfrog.io/artifactory/api/npm/f3capital-npm/:_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
-          echo "always-auth=true" >> ~/.npmrc
-          
+        run: |          
           # Install dependencies in the root directory
           if [ -f "package.json" ]; then
             yarn install
@@ -140,5 +152,5 @@ jobs:
           export AWS_ACCESS_KEY_ID=${{vars.AWS_ACCESS_KEY_ID_PRD}}
           export AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_PRD}}
           export AWS_REGION=${{ inputs.AWS_REGION || vars.AWS_REGION_PRD }}
-          npm i -g serverless@3
+          npm i -g serverless
           sls deploy --stage ${{vars.ENV_PRD}} --region $AWS_REGION
