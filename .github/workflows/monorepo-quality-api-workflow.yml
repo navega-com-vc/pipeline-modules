@@ -42,6 +42,8 @@ env:
 
   ENV: ${{ vars.ENV_DEV }}
 
+  NPM_REGISTRY: https://registry.npmjs.org/
+
 jobs:
   install:
     if: ${{ !contains(fromJson('["dev", "stg", "pre-sbx", "sbx", "main"]'), github.head_ref) }}
@@ -78,9 +80,12 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           cd ..
-          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
-          npm config set -- '_auth' "${{secrets.ARTIFACTORY_AUTH}}"
-          npm config set -- 'email' "${{vars.ARTIFACTORY_EMAIL}}"
+          npm config set registry ${{ env.NPM_REGISTRY }}
+          npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+
+          REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN_BACKEND}}
+
           echo "always-auth=true" >> ~/.npmrc
           cp ~/.npmrc ./.npmrc
           yarn install
