@@ -1,0 +1,60 @@
+name: web-deploy-dev-with-scope
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      API_URL: ${{vars.NAVEGA_API_URL_DEV}}
+      LOAN_API_URL: ${{vars.LOAN_API_URL_DEV}}
+
+      NPM_REGISTRY: https://registry.npmjs.org/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17
+
+      - name: Config Registry
+        run: |
+          npm config set registry ${{ env.NPM_REGISTRY }}
+          npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
+
+          REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
+          npm config set //$REGISTRY_PATH:_authToken=${{secrets.JF_ACCESS_TOKEN_FRONTEND}}
+
+          echo "always-auth=true" >> ~/.npmrc
+
+      - name: Install
+        run: |
+          yarn install
+
+      - name: Build
+        run: |
+          export NODE_OPTIONS="--max_old_space_size=4096"
+          yarn dev
+
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID_DEV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          aws-region: ${{ vars.AWS_REGION_DEV }}
+
+      - name: Development Deploy AWS
+        run: |
+          aws s3 sync dist/ s3://dev.navega.com.vc --delete
+          aws cloudfront create-invalidation --distribution-id=E2JGH2UQV5LDTK --paths "/*"
