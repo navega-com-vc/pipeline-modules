@@ -64,8 +64,6 @@ jobs:
 
       SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_ERP }}
 
-      NPM_REGISTRY: https://registry.npmjs.org/
-
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -81,7 +79,7 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
           cd ..
-          npm config set registry ${{ env.NPM_REGISTRY }}
+          npm config set registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
           npm config set @navega:registry ${{vars.ARTIFACTORY_NPM_REGISTRY}}
 
           REGISTRY_PATH=$(echo "${{vars.ARTIFACTORY_NPM_REGISTRY}}" | sed 's|https://||')
