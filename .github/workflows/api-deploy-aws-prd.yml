@@ -99,6 +99,15 @@ jobs:
 
       SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_ERP }}
 
+      AUDIT_STORE: rds
+      AUDIT_DB_HOST: ${{vars.AUDIT_DB_HOST_PRD}}
+      AUDIT_DB_PORT: ${{vars.AUDIT_DB_PORT_PRD}}
+      AUDIT_DB_DATABASE: ${{vars.AUDIT_DB_DATABASE_PRD}}
+      AUDIT_DB_USER: ${{vars.AUDIT_DB_USER_PRD}}
+      AUDIT_DB_PASSWORD: ${{secrets.AUDIT_DB_PASSWORD_PRD}}
+      AUDIT_DB_SSL: true
+      AUDIT_ENABLED: true
+
       NPM_REGISTRY: https://registry.npmjs.org/
 
     steps:
