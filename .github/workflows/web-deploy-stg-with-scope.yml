@@ -19,7 +19,8 @@ jobs:
       DATADOG_SAMPLE_RATE: ${{vars.DATADOG_SAMPLE_RATE_STG}}
       DATADOG_SERVICE: navega-web-stg
       DATADOG_ENV: stg
-
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_STG}}
+      ENV: ${{vars.ENV_STG}}
       NPM_REGISTRY: https://registry.npmjs.org/
 
     steps:

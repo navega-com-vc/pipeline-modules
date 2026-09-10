@@ -19,7 +19,8 @@ jobs:
       DATADOG_SAMPLE_RATE: ${{vars.DATADOG_SAMPLE_RATE_SBX}}
       DATADOG_SERVICE: navega-web-pre-sbx
       DATADOG_ENV: pre-sbx
-
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_SBX}}
+      ENV: ${{vars.ENV_PRE_SBX}}
       NPM_REGISTRY: https://registry.npmjs.org/
 
     steps:
