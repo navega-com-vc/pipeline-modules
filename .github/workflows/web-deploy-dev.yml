@@ -14,6 +14,8 @@ jobs:
     env:
       API_URL: ${{vars.NAVEGA_API_URL_DEV}}
       LOAN_API_URL: ${{vars.LOAN_API_URL_DEV}}
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}
+      ENV: ${{vars.ENV_DEV}}
 
     steps:
       - name: Checkout

@@ -19,6 +19,8 @@ jobs:
       DATADOG_SAMPLE_RATE: ${{vars.DATADOG_SAMPLE_RATE_PRD}}
       DATADOG_SERVICE: navega-web-prd
       DATADOG_ENV: prd
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_PRD}}
+      ENV: ${{vars.ENV_PRD}}
 
     steps:
       - name: Checkout

@@ -19,6 +19,8 @@ jobs:
       DATADOG_SAMPLE_RATE: ${{vars.DATADOG_SAMPLE_RATE_SBX}}
       DATADOG_SERVICE: navega-web-sbx
       DATADOG_ENV: sbx
+      KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_SBX}}
+      ENV: ${{vars.ENV_SBX}}
 
     steps:
       - name: Checkout
