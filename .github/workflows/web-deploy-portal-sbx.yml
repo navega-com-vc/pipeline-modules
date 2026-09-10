@@ -23,7 +23,7 @@ jobs:
       DATADOG_APPLICATION_ID: ${{ vars.DD_NAVEGA_PORTAL_APPLICATION_ID_SBX }}
       DATADOG_CLIENT_TOKEN: ${{ secrets.DD_NAVEGA_PORTAL_CLIENT_TOKEN_SBX }}
       KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_SBX}}
-      ENV: ${{vars.ENV_PRE_SBX}}
+      ENV: ${{vars.ENV_SBX}}
 
     steps:
       - name: Checkout
