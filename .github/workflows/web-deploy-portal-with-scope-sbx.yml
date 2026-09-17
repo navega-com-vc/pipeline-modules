@@ -74,5 +74,6 @@ jobs:
       - name: Sandbox Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete
+          aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete --exclude index.html --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp dist/index.html s3://${{inputs.BUCKET_PATH}}/index.html --cache-control "no-cache, no-store, must-revalidate"
           aws cloudfront create-invalidation --distribution-id=E311F38ENNBF88 --paths "/*"

@@ -57,5 +57,6 @@ jobs:
 
       - name: Development Deploy AWS
         run: |
-          aws s3 sync dist/ s3://dev.navega.com.vc --delete
+          aws s3 sync dist/ s3://dev.navega.com.vc --delete --exclude index.html --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp dist/index.html s3://dev.navega.com.vc/index.html --cache-control "no-cache, no-store, must-revalidate"
           aws cloudfront create-invalidation --distribution-id=E2JGH2UQV5LDTK --paths "/*"
