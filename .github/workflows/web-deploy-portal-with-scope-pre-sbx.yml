@@ -76,6 +76,10 @@ jobs:
         run: |
           aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete --cache-control "public, max-age=31536000, immutable"
           INDEX_HTML=$(find dist -name index.html | head -1)
+          if [ -z "$INDEX_HTML" ]; then
+            echo "ERRO: nenhum index.html encontrado em dist/ — build pode ter falhado silenciosamente." >&2
+            exit 1
+          fi
           INDEX_KEY=${INDEX_HTML#dist/}
           aws s3 cp "$INDEX_HTML" "s3://${{inputs.BUCKET_PATH}}/$INDEX_KEY" --cache-control "no-cache, no-store, must-revalidate"
           aws cloudfront create-invalidation --distribution-id=EJLDT6RPJB8WZ --paths "/*"
