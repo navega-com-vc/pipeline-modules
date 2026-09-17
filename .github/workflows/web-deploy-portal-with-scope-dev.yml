@@ -71,14 +71,5 @@ jobs:
       - name: Development Deploy
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
         run: |
-          aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete --cache-control "public, max-age=31536000, immutable"
-          INDEX_HTML=$(find dist -name index.html)
-          INDEX_COUNT=$(echo "$INDEX_HTML" | grep -c .)
-          if [ "$INDEX_COUNT" -ne 1 ]; then
-            echo "ERRO: esperava exatamente 1 index.html em dist/, encontrado $INDEX_COUNT:" >&2
-            echo "$INDEX_HTML" >&2
-            exit 1
-          fi
-          INDEX_KEY=${INDEX_HTML#dist/}
-          aws s3 cp "$INDEX_HTML" "s3://${{inputs.BUCKET_PATH}}/$INDEX_KEY" --cache-control "no-cache, no-store, must-revalidate"
+          aws s3 sync dist/ s3://${{inputs.BUCKET_PATH}} --delete
           aws cloudfront create-invalidation --distribution-id=ERYU3DLSLHXC3 --paths "/*"
