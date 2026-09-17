@@ -62,6 +62,8 @@ jobs:
 
       - name: Pre-Sandbox Deploy AWS
         run: |
-          aws s3 sync dist/ s3://pre-sbx.navega.com.vc --delete --exclude index.html --cache-control "public, max-age=31536000, immutable"
-          aws s3 cp dist/index.html s3://pre-sbx.navega.com.vc/index.html --cache-control "no-cache, no-store, must-revalidate"
+          aws s3 sync dist/ s3://pre-sbx.navega.com.vc --delete --cache-control "public, max-age=31536000, immutable"
+          INDEX_HTML=$(find dist -name index.html | head -1)
+          INDEX_KEY=${INDEX_HTML#dist/}
+          aws s3 cp "$INDEX_HTML" "s3://pre-sbx.navega.com.vc/$INDEX_KEY" --cache-control "no-cache, no-store, must-revalidate"
           aws cloudfront create-invalidation --distribution-id=E2YWP3OFF57QON --paths "/*"
