@@ -56,6 +56,9 @@ jobs:
 
       INTEGRATION_API_URL: ${{ vars.INTEGRATION_API_URL_PRE_SBX }}
 
+      # Temporário enquanto não existir a secret
+      DEATH_NOTIFICATION_UPLOAD_TOKEN_SECRET: ${{ secrets.MFA_KEY_SBX }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
