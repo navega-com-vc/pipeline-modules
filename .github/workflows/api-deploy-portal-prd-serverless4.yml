@@ -61,6 +61,9 @@ jobs:
 
       SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_PORTAL }}
 
+      # Temporário enquanto não existir a secret
+      DEATH_NOTIFICATION_UPLOAD_TOKEN_SECRET: ${{ secrets.MFA_KEY_PRD }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
