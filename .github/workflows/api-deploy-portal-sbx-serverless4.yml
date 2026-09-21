@@ -62,8 +62,7 @@ jobs:
 
       SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY_PORTAL }}
 
-      # Temporário enquanto não existir a secret
-      DEATH_NOTIFICATION_UPLOAD_TOKEN_SECRET: ${{ secrets.MFA_KEY_SBX }}
+      DEATH_NOTIFICATION_UPLOAD_TOKEN_SECRET: ${{ secrets.HMAC_SECRET_DEV }}
 
     steps:
       - name: Checkout
